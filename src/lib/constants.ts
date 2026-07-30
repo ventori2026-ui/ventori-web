@@ -13,8 +13,18 @@ export const SITE = {
   locale: 'es_CO',
   lang: 'es',
   country: 'CO',
-  /** Se sobrescribe en Vercel con la URL de producción. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  /**
+   * Base para canonical, Open Graph, sitemap y robots.
+   *
+   * Se define explícitamente con `NEXT_PUBLIC_SITE_URL` cuando haya dominio
+   * propio. Si no está, Vercel expone la URL de producción del proyecto, así
+   * que el despliegue queda correcto sin configuración manual.
+   */
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : 'http://localhost:3000'),
 } as const
 
 export const ROUTES = {
