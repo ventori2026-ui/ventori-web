@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ventori — sitio web corporativo
 
-## Getting Started
+Sitio de Ventori, empresa colombiana de **ingeniería, consultoría e interventoría** para proyectos de infraestructura pública y privada.
 
-First, run the development server:
+Next.js 16 · React 19 · TypeScript · Tailwind v4 · Framer Motion
+
+## Arrancar
 
 ```bash
+npm install
+cp .env.example .env.local   # completar las variables
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run build` compila y verifica tipos. `npm run lint` corre ESLint.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/          rutas (home + 5 internas) y el route handler del formulario
+├── components/
+│   ├── layout/   Header, Footer, Logo
+│   ├── motion/   Reveal, Stagger, Counter, ScrollProgress, MotionProvider
+│   ├── sections/ secciones compuestas por las páginas
+│   └── ui/       primitivas de diseño
+├── content/      TODO el copy y los datos, tipados
+├── lib/          constants, env, seo, utils, validación
+├── styles/       tokens de marca
+└── types/
+```
 
-## Learn More
+## Reglas del proyecto
 
-To learn more about Next.js, take a look at the following resources:
+Están en [AGENTS.md](AGENTS.md). Las tres que más pesan:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Nada hardcodeado.** El copy vive en `src/content/`, todo lo demás en `src/lib/constants.ts`, los secretos en env con getter que falla si falta.
+2. **La terracota nunca es texto sobre blanco** (2.7:1, no pasa AA). Va como fondo de bloque con texto navy, o como acento sobre navy.
+3. **Toda animación pasa por `src/components/motion/`.** Respetan `prefers-reduced-motion` vía `MotionProvider`, y el `<noscript>` del layout mantiene el contenido visible sin JavaScript.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Pendiente del cliente
 
-## Deploy on Vercel
+Estos archivos están listos y vacíos a propósito — al cargarlos, la UI se adapta sola:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Qué falta | Dónde va |
+|---|---|
+| Correo, teléfono, dirección, ciudad, LinkedIn | `src/lib/constants.ts` → `CONTACT`, `SOCIAL` |
+| Cifras de la barra de indicadores | `src/content/stats.ts` |
+| Proyectos de referencia con foto | `src/content/projects.ts` |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Mientras `STATS` y `PROJECTS` estén vacíos, la barra de cifras no se renderiza y `/proyectos` muestra un estado explícito. Los canales de contacto sin dato se omiten en lugar de aparecer en blanco.
