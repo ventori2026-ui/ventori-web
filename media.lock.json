@@ -1,0 +1,138 @@
+{
+  "sectorVial": {
+    "id": 33622132,
+    "width": 2400,
+    "height": 1350,
+    "photographer": "K",
+    "sourceUrl": "https://www.pexels.com/photo/aerial-view-of-busy-highway-intersection-in-sandton-33622132/",
+    "bytes": 732817
+  },
+  "sectorEquipamientos": {
+    "id": 18748918,
+    "width": 2400,
+    "height": 1800,
+    "photographer": "Petrovskii  Anton",
+    "sourceUrl": "https://www.pexels.com/photo/garage-museum-of-contemporary-art-in-moscow-18748918/",
+    "bytes": 461794
+  },
+  "sectorTerritorial": {
+    "id": 12036904,
+    "width": 2400,
+    "height": 1271,
+    "photographer": "Engin Akyurt",
+    "sourceUrl": "https://www.pexels.com/photo/birds-eye-view-of-a-cityscape-12036904/",
+    "bytes": 479816
+  },
+  "sectorPrivadas": {
+    "id": 35705372,
+    "width": 2400,
+    "height": 1601,
+    "photographer": "Jimmy Liao",
+    "sourceUrl": "https://www.pexels.com/photo/urban-construction-scene-with-cranes-in-taipei-35705372/",
+    "bytes": 482592
+  },
+  "aboutSplit": {
+    "id": 8961025,
+    "width": 2400,
+    "height": 1600,
+    "photographer": "Mikael Blomkvist",
+    "sourceUrl": "https://www.pexels.com/photo/a-man-and-a-woman-working-at-a-construction-site-8961025/",
+    "bytes": 290232
+  },
+  "pillarEstructuracion": {
+    "id": 6281167,
+    "width": 2400,
+    "height": 1600,
+    "photographer": "Yaroslav Shuraev",
+    "sourceUrl": "https://www.pexels.com/photo/a-person-holding-a-pencil-6281167/",
+    "bytes": 182383
+  },
+  "pillarEjecucion": {
+    "id": 34960818,
+    "width": 2400,
+    "height": 1574,
+    "photographer": "Robert So",
+    "sourceUrl": "https://www.pexels.com/photo/urban-construction-site-with-excavator-and-barricades-34960818/",
+    "bytes": 766789
+  },
+  "pillarCierre": {
+    "id": 36145676,
+    "width": 2400,
+    "height": 1800,
+    "photographer": "Shlok Rana",
+    "sourceUrl": "https://www.pexels.com/photo/scenic-view-of-double-bridges-over-calm-river-36145676/",
+    "bytes": 515768
+  },
+  "servicesSupport": {
+    "id": 29356756,
+    "width": 2400,
+    "height": 1600,
+    "photographer": "Eyes2Soul Eyes2Soul",
+    "sourceUrl": "https://www.pexels.com/photo/high-tech-surveying-instrument-in-cincinnati-street-29356756/",
+    "bytes": 252679
+  },
+  "whyUs": {
+    "id": 19895874,
+    "width": 2400,
+    "height": 1601,
+    "photographer": "ThisIsEngineering",
+    "sourceUrl": "https://www.pexels.com/photo/woman-and-man-at-construction-site-19895874/",
+    "bytes": 193914
+  },
+  "ctaBand": {
+    "id": 6754972,
+    "width": 2400,
+    "height": 1345,
+    "photographer": "K",
+    "sourceUrl": "https://www.pexels.com/photo/city-district-with-railway-tracks-and-rugby-fields-6754972/",
+    "bytes": 393642
+  },
+  "hero1": {
+    "id": 37368522,
+    "width": 1280,
+    "height": 720,
+    "photographer": "David Pickup |  Advertising & Marketing  🇬🇧",
+    "sourceUrl": "https://www.pexels.com/video/aerial-view-of-busy-highway-intersection-37368522/",
+    "bytes": 1027144
+  },
+  "hero3": {
+    "id": 12965605,
+    "width": 1280,
+    "height": 720,
+    "photographer": "Toan Huynh",
+    "sourceUrl": "https://www.pexels.com/video/bridge-near-city-12965605/",
+    "bytes": 650513
+  },
+  "sectorObrasCiviles": {
+    "id": 32141080,
+    "width": 2400,
+    "height": 1600,
+    "photographer": "Ali",
+    "sourceUrl": "https://www.pexels.com/photo/construction-workers-on-rebar-grid-site-32141080/",
+    "bytes": 824970
+  },
+  "sectorEntidades": {
+    "id": 8310949,
+    "width": 2400,
+    "height": 1600,
+    "photographer": "Lars H Knudsen",
+    "sourceUrl": "https://www.pexels.com/photo/exterior-design-of-a-building-8310949/",
+    "bytes": 293080
+  },
+  "hero2": {
+    "id": 9369897,
+    "width": 1280,
+    "height": 720,
+    "photographer": "Altaf Shah",
+    "sourceUrl": "https://www.pexels.com/video/drone-footage-of-a-highway-and-a-roundabout-9369897/",
+    "bytes": 786305
+  },
+  "sectorUrbanismo": {
+    "id": 34431069,
+    "width": 2400,
+    "height": 1350,
+    "photographer": "K",
+    "sourceUrl": "https://www.pexels.com/photo/aerial-view-of-budapest-city-blocks-in-fall-34431069/",
+    "bytes": 826701
+  }
+}

@@ -14,17 +14,21 @@ function LinkedInIcon() {
   )
 }
 
+/**
+ * Footer claro, como en la referencia, cerrado por el nombre de la marca a gran
+ * tamaño recortado en el borde inferior.
+ */
 export function Footer() {
   const channels = getContactChannels()
   const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-white/10 bg-navy-950 text-white">
-      <Container className="py-16 md:py-20">
+    <footer className="relative overflow-hidden bg-white text-navy-950">
+      <Container className="pt-16 md:pt-24">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          <div className="lg:col-span-1">
-            <Logo />
-            <p className="mt-6 max-w-xs text-sm leading-relaxed text-white/65">
+          <div>
+            <Logo tone="onLight" />
+            <p className="mt-6 max-w-xs text-sm leading-relaxed text-navy-950/65">
               {SITE.description}
             </p>
             {SOCIAL.linkedin ? (
@@ -32,7 +36,7 @@ export function Footer() {
                 href={SOCIAL.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-6 inline-flex size-10 items-center justify-center rounded-full border border-white/25 text-white transition-colors duration-300 hover:border-terracota-500 hover:text-terracota-300"
+                className="mt-6 inline-flex size-10 items-center justify-center rounded-full border border-navy-950/20 text-navy-950 transition-colors duration-300 hover:border-navy-950 hover:bg-navy-950 hover:text-white"
                 aria-label={`${SITE.name} en LinkedIn`}
               >
                 <LinkedInIcon />
@@ -43,7 +47,7 @@ export function Footer() {
           <nav aria-labelledby="footer-navegacion">
             <h2
               id="footer-navegacion"
-              className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
+              className="text-xs font-semibold uppercase tracking-[0.16em] text-navy-700"
             >
               Navegación
             </h2>
@@ -52,7 +56,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/70 transition-colors duration-200 hover:text-white"
+                    className="text-sm text-navy-950/70 transition-colors duration-200 hover:text-navy-950"
                   >
                     {link.label}
                   </Link>
@@ -64,7 +68,7 @@ export function Footer() {
           <nav aria-labelledby="footer-servicios">
             <h2
               id="footer-servicios"
-              className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
+              className="text-xs font-semibold uppercase tracking-[0.16em] text-navy-700"
             >
               Servicios
             </h2>
@@ -73,7 +77,7 @@ export function Footer() {
                 <li key={service.id}>
                   <Link
                     href={`${ROUTES.services}#${service.id}`}
-                    className="text-sm text-white/70 transition-colors duration-200 hover:text-white"
+                    className="text-sm text-navy-950/70 transition-colors duration-200 hover:text-navy-950"
                   >
                     {service.title}
                   </Link>
@@ -83,14 +87,17 @@ export function Footer() {
           </nav>
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-navy-700">
               Contacto
             </h2>
             <ul className="mt-6 space-y-3">
               {channels.map((channel) => (
-                <li key={channel.id} className="text-sm text-white/70">
+                <li key={channel.id} className="text-sm text-navy-950/70">
                   {channel.href ? (
-                    <a href={channel.href} className="transition-colors duration-200 hover:text-white">
+                    <a
+                      href={channel.href}
+                      className="transition-colors duration-200 hover:text-navy-950"
+                    >
                       {channel.value}
                     </a>
                   ) : (
@@ -98,8 +105,12 @@ export function Footer() {
                   )}
                 </li>
               ))}
-              <li className="flex items-start gap-2 pt-1 text-sm text-white/70">
-                <Clock className="mt-0.5 size-4 shrink-0 text-terracota-400" strokeWidth={1.5} aria-hidden="true" />
+              <li className="flex items-start gap-2 pt-1 text-sm text-navy-950/70">
+                <Clock
+                  className="mt-0.5 size-4 shrink-0 text-navy-700"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                />
                 <span>
                   {CONTACT.schedule.days}
                   <br />
@@ -110,12 +121,21 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 border-t border-white/10 pt-8">
-          <p className="text-xs text-white/50">
+        <div className="mt-16 border-t border-navy-950/10 pt-8">
+          <p className="text-xs text-navy-950/50">
             © {year} {SITE.legalName}. Todos los derechos reservados.
           </p>
         </div>
       </Container>
+
+      {/* Marca de agua: decorativa y recortada abajo, como en la referencia.
+          El nombre real ya lo aportan el logo y el copyright. */}
+      <p
+        className="pointer-events-none -mb-[2vw] select-none whitespace-nowrap text-center font-display text-[13vw] font-extrabold leading-none tracking-tighter text-navy-950/[0.06]"
+        aria-hidden="true"
+      >
+        {SITE.name}
+      </p>
     </footer>
   )
 }

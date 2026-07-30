@@ -1,3 +1,5 @@
+import type { MediaKey } from '@/content/media'
+
 /** Nombres de icono admitidos. Se resuelven a componentes en `components/ui/Icon.tsx`. */
 export type IconName =
   | 'ClipboardCheck'
@@ -44,6 +46,18 @@ export interface Sector {
   title: string
   description: string
   icon: IconName
+  /** Clave de `content/media.ts`; nunca una ruta de archivo. */
+  media: MediaKey
+}
+
+/** Fase del ciclo de proyecto que se muestra en la sección de scroll fijo. */
+export interface Pillar {
+  id: string
+  /** Palabra única de la lista lateral. */
+  label: string
+  title: string
+  description: string
+  media: MediaKey
 }
 
 export interface Differentiator {

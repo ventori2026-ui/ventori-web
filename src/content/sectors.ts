@@ -11,6 +11,7 @@ export const SECTORS: readonly Sector[] = [
     description:
       'Vías urbanas y rurales, pavimentos, obras de drenaje y estructuras asociadas, desde el diagnóstico del corredor hasta la entrega de la obra.',
     icon: 'Route',
+    media: 'sectorVial',
   },
   {
     id: 'obras-civiles',
@@ -18,6 +19,7 @@ export const SECTORS: readonly Sector[] = [
     description:
       'Estructuras, cimentaciones, redes y obras complementarias, con control de calidad sobre materiales y procedimientos constructivos.',
     icon: 'HardHat',
+    media: 'sectorObrasCiviles',
   },
   {
     id: 'equipamientos-publicos',
@@ -25,6 +27,7 @@ export const SECTORS: readonly Sector[] = [
     description:
       'Instituciones educativas, centros de salud, escenarios deportivos y edificaciones institucionales al servicio de la comunidad.',
     icon: 'Building2',
+    media: 'sectorEquipamientos',
   },
   {
     id: 'urbanismo',
@@ -32,6 +35,7 @@ export const SECTORS: readonly Sector[] = [
     description:
       'Espacio público, andenes, parques y proyectos de renovación urbana que mejoran la manera en que se habita la ciudad.',
     icon: 'LayoutGrid',
+    media: 'sectorUrbanismo',
   },
   {
     id: 'desarrollo-territorial',
@@ -39,6 +43,7 @@ export const SECTORS: readonly Sector[] = [
     description:
       'Proyectos que articulan infraestructura con planificación del territorio y con las prioridades de desarrollo de la región.',
     icon: 'Globe2',
+    media: 'sectorTerritorial',
   },
   {
     id: 'entidades-publicas',
@@ -46,6 +51,7 @@ export const SECTORS: readonly Sector[] = [
     description:
       'Alcaldías, gobernaciones, institutos descentralizados y entidades del orden nacional, con el rigor documental que exige lo público.',
     icon: 'Landmark',
+    media: 'sectorEntidades',
   },
   {
     id: 'empresas-privadas',
@@ -53,5 +59,6 @@ export const SECTORS: readonly Sector[] = [
     description:
       'Constructoras, promotores e industria que requieren control técnico independiente sobre su inversión en infraestructura.',
     icon: 'Briefcase',
+    media: 'sectorPrivadas',
   },
 ] as const
