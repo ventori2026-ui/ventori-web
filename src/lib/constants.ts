@@ -4,8 +4,9 @@
  */
 
 export const SITE = {
-  name: 'Ventori',
-  legalName: 'Ventori',
+  /** Nombre de marca tal como aparece en el logotipo oficial. */
+  name: 'Grupo Ventori',
+  legalName: 'Grupo Ventori',
   tagline: 'Ingeniería, consultoría e interventoría',
   description:
     'Empresa colombiana especializada en ingeniería, consultoría e interventoría, enfocada en soluciones técnicas integrales para proyectos de infraestructura pública y privada.',
