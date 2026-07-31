@@ -1,6 +1,7 @@
 import { Reveal } from '@/components/motion/Reveal'
 import { HeroVideo } from '@/components/sections/HeroVideo'
 import { ButtonLink } from '@/components/ui/Button'
+import { LiquidMetalButtonLink } from '@/components/ui/LiquidMetalButton'
 import { Container } from '@/components/ui/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { HERO } from '@/content/about'
@@ -37,9 +38,9 @@ export function Hero() {
 
           <Reveal delay={0.24}>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href={ROUTES.contact} size="lg" withArrow>
+              <LiquidMetalButtonLink href={ROUTES.contact} size="lg" withArrow>
                 {HERO.primaryCta}
-              </ButtonLink>
+              </LiquidMetalButtonLink>
               <ButtonLink href={ROUTES.services} size="lg" variant="outline">
                 {HERO.secondaryCta}
               </ButtonLink>

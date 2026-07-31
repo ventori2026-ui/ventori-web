@@ -4,8 +4,14 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { CONTACT_FORM, CONTACT_SUBJECTS, FORM_MESSAGES, FORM_STATUS, type FormStatus } from '@/lib/constants'
+import { LiquidMetalButton } from '@/components/ui/LiquidMetalButton'
+import {
+  CONTACT_FORM,
+  CONTACT_SUBJECTS,
+  FORM_MESSAGES,
+  FORM_STATUS,
+  type FormStatus,
+} from '@/lib/constants'
 import { contactSchema, type ContactInput } from '@/lib/validation/contact'
 import { cn } from '@/lib/utils'
 
@@ -75,7 +81,10 @@ export function ContactForm() {
 
       <div className="grid gap-8 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
+          <label
+            htmlFor="name"
+            className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
+          >
             Nombre completo
           </label>
           <input
@@ -92,7 +101,10 @@ export function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="email" className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
+          <label
+            htmlFor="email"
+            className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
+          >
             Correo electrónico
           </label>
           <input
@@ -109,7 +121,10 @@ export function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="phone" className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
+          <label
+            htmlFor="phone"
+            className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
+          >
             Teléfono
           </label>
           <input
@@ -130,7 +145,8 @@ export function ContactForm() {
             htmlFor="organization"
             className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
           >
-            Entidad o empresa <span className="normal-case tracking-normal text-white/40">(opcional)</span>
+            Entidad o empresa{' '}
+            <span className="normal-case tracking-normal text-white/40">(opcional)</span>
           </label>
           <input
             id="organization"
@@ -145,7 +161,10 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="subject" className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
+        <label
+          htmlFor="subject"
+          className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
+        >
           Asunto
         </label>
         <select
@@ -165,7 +184,10 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="message" className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
+        <label
+          htmlFor="message"
+          className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
+        >
           Cuéntanos sobre el proyecto
         </label>
         <textarea
@@ -182,9 +204,14 @@ export function ContactForm() {
       </div>
 
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-        <Button type="submit" size="lg" disabled={isSubmitting} withArrow={!isSubmitting}>
+        <LiquidMetalButton
+          type="submit"
+          size="lg"
+          disabled={isSubmitting}
+          withArrow={!isSubmitting}
+        >
           {isSubmitting ? 'Enviando…' : 'Enviar mensaje'}
-        </Button>
+        </LiquidMetalButton>
 
         {/* `aria-live` anuncia el resultado sin mover el foco del usuario. */}
         <p

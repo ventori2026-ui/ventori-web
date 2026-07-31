@@ -27,6 +27,19 @@
     text-wrap: pretty;
   }
 
+  /*
+    El canvas que inyecta @paper-design/shaders no hereda el tamaño de su
+    contenedor. Se ajusta aquí en vez de inyectar un <style> global desde el
+    componente, como hacía la implementación original.
+  */
+  [data-liquid-metal] canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
   ::selection {
     background-color: var(--color-terracota-500);
     color: var(--color-navy-950);

@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger, StaggerItem } from '@/components/motion/Stagger'
 import { BrandGlyph } from '@/components/ui/BrandGlyph'
-import { ButtonLink } from '@/components/ui/Button'
+import { LiquidMetalButtonLink } from '@/components/ui/LiquidMetalButton'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import { PAGES } from '@/content/pages'
@@ -36,9 +36,9 @@ export function ProjectsGrid() {
               <p className="mt-5 text-base leading-relaxed text-white/70">
                 {PAGES.projects.empty.text}
               </p>
-              <ButtonLink href={ROUTES.contact} className="mt-8" withArrow>
+              <LiquidMetalButtonLink href={ROUTES.contact} className="mt-8" withArrow>
                 Escríbenos
-              </ButtonLink>
+              </LiquidMetalButtonLink>
             </div>
           </Reveal>
         </Container>

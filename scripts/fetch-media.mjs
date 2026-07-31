@@ -71,8 +71,10 @@ async function readApiKey() {
 async function pexels(path, key) {
   const response = await fetch(`${API}${path}`, { headers: { Authorization: key } })
 
-  if (response.status === 401) throw new Error('Pexels rechazó la key (401). Revisa que esté completa.')
-  if (response.status === 429) throw new Error('Pexels devolvió 429: cuota agotada. Espera una hora.')
+  if (response.status === 401)
+    throw new Error('Pexels rechazó la key (401). Revisa que esté completa.')
+  if (response.status === 429)
+    throw new Error('Pexels devolvió 429: cuota agotada. Espera una hora.')
   if (!response.ok) throw new Error(`Pexels respondió ${response.status} en ${path}`)
 
   return response.json()
@@ -256,7 +258,9 @@ async function main() {
           break
         }
 
-        console.log(`  · ${video.key}: aun reencodado pesa ${(bytes / 1e6).toFixed(1)} MB, se prueba otro`)
+        console.log(
+          `  · ${video.key}: aun reencodado pesa ${(bytes / 1e6).toFixed(1)} MB, se prueba otro`,
+        )
         await rm(videoFile, { force: true })
       }
 

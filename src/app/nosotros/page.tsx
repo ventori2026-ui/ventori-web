@@ -18,11 +18,7 @@ export const metadata: Metadata = buildMetadata({
 export default function AboutPage() {
   return (
     <>
-      <PageHero
-        eyebrow={PAGES.about.eyebrow}
-        title={PAGES.about.title}
-        lead={PAGES.about.lead}
-      />
+      <PageHero eyebrow={PAGES.about.eyebrow} title={PAGES.about.title} lead={PAGES.about.lead} />
       <AboutFull />
       <MissionVision />
       <WhyUs />

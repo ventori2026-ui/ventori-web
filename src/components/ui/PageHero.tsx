@@ -28,7 +28,9 @@ export function PageHero({ eyebrow, title, lead }: PageHeroProps) {
           </h1>
         </Reveal>
         <Reveal delay={0.16}>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">{lead}</p>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
+            {lead}
+          </p>
         </Reveal>
       </Container>
     </section>

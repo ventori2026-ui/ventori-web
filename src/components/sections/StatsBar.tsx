@@ -17,10 +17,7 @@ export function StatsBar() {
         <h2 id="cifras" className="sr-only">
           Cifras de la compañía
         </h2>
-        <Stagger
-          as="ul"
-          className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4"
-        >
+        <Stagger as="ul" className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
           {STATS.map((stat) => (
             <StaggerItem as="li" key={stat.id} className="border-l border-navy-950/25 pl-5">
               <Counter

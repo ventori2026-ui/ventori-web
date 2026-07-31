@@ -18,10 +18,7 @@ export function Eyebrow({ children, tone = 'onDark', className }: EyebrowProps) 
       )}
     >
       <span
-        className={cn(
-          'h-px w-8 shrink-0',
-          tone === 'onDark' ? 'bg-terracota-500' : 'bg-navy-700',
-        )}
+        className={cn('h-px w-8 shrink-0', tone === 'onDark' ? 'bg-terracota-500' : 'bg-navy-700')}
         aria-hidden="true"
       />
       {children}

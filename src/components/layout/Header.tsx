@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
 import { Container } from '@/components/ui/Container'
-import { ButtonLink } from '@/components/ui/Button'
+import { LiquidMetalButtonLink } from '@/components/ui/LiquidMetalButton'
 import { NAV_LINKS, ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
@@ -90,9 +90,13 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <ButtonLink href={ROUTES.contact} className="hidden lg:inline-flex" withArrow>
+            <LiquidMetalButtonLink
+              href={ROUTES.contact}
+              className="hidden lg:inline-flex"
+              withArrow
+            >
               Hablemos
-            </ButtonLink>
+            </LiquidMetalButtonLink>
 
             <button
               type="button"
@@ -112,31 +116,44 @@ export function Header() {
         </div>
       </Container>
 
+      {/*
+        El contenido se monta solo con el menú abierto. Dejándolo siempre en el
+        DOM, el CTA inferior levantaba un contexto WebGL sobre una caja de 0×0.
+      */}
       <div
         id="menu-movil"
         hidden={!isMenuOpen}
         className="h-[calc(100dvh-var(--header-height))] overflow-y-auto border-t border-white/10 bg-navy-950 lg:hidden"
       >
-        <Container className="flex flex-col gap-2 py-8">
-          <nav aria-label="Navegación principal móvil" className="flex flex-col">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={isActive(link.href) ? 'page' : undefined}
-                className={cn(
-                  'border-b border-white/10 py-5 font-display text-2xl font-bold tracking-tight transition-colors duration-200',
-                  isActive(link.href) ? 'text-terracota-400' : 'text-white hover:text-terracota-300',
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <ButtonLink href={ROUTES.contact} size="lg" className="mt-6 w-full" withArrow>
-            Hablemos
-          </ButtonLink>
-        </Container>
+        {isMenuOpen ? (
+          <Container className="flex flex-col gap-2 py-8">
+            <nav aria-label="Navegación principal móvil" className="flex flex-col">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive(link.href) ? 'page' : undefined}
+                  className={cn(
+                    'border-b border-white/10 py-5 font-display text-2xl font-bold tracking-tight transition-colors duration-200',
+                    isActive(link.href)
+                      ? 'text-terracota-400'
+                      : 'text-white hover:text-terracota-300',
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <LiquidMetalButtonLink
+              href={ROUTES.contact}
+              size="lg"
+              className="mt-6 w-full"
+              withArrow
+            >
+              Hablemos
+            </LiquidMetalButtonLink>
+          </Container>
+        ) : null}
       </div>
     </header>
   )

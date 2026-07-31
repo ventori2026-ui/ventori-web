@@ -15,8 +15,7 @@ export const PAGES = {
     title: 'Ingeniería con responsabilidad sobre el resultado',
     lead: 'Somos una empresa colombiana de ingeniería, consultoría e interventoría. Acompañamos proyectos de infraestructura pública y privada en todas sus etapas.',
     metaTitle: 'Nosotros',
-    description:
-      `Conoce a ${SITE.name}: misión, visión y compromiso de una empresa colombiana de ingeniería, consultoría e interventoría para proyectos de infraestructura.`,
+    description: `Conoce a ${SITE.name}: misión, visión y compromiso de una empresa colombiana de ingeniería, consultoría e interventoría para proyectos de infraestructura.`,
   },
   services: {
     eyebrow: 'Servicios',
@@ -39,8 +38,7 @@ export const PAGES = {
     title: 'Proyectos de referencia',
     lead: 'Una selección de los proyectos en los que hemos participado, con su alcance, ubicación y año de ejecución.',
     metaTitle: 'Proyectos',
-    description:
-      `Proyectos de infraestructura vial, obras civiles y equipamientos públicos en los que ${SITE.name} ha participado como consultor o interventor.`,
+    description: `Proyectos de infraestructura vial, obras civiles y equipamientos públicos en los que ${SITE.name} ha participado como consultor o interventor.`,
     /** Estado cuando `PROJECTS` todavía está vacío. */
     empty: {
       title: 'Estamos preparando esta sección',
@@ -52,7 +50,6 @@ export const PAGES = {
     title: 'Cuéntanos qué necesitas resolver',
     lead: 'Escríbenos con el contexto del proyecto y la etapa en la que se encuentra. Te respondemos con una propuesta de alcance concreta.',
     metaTitle: 'Contacto',
-    description:
-      `Contacta al equipo de ${SITE.name} para proyectos de ingeniería, consultoría e interventoría en Colombia. Atención de lunes a viernes.`,
+    description: `Contacta al equipo de ${SITE.name} para proyectos de ingeniería, consultoría e interventoría en Colombia. Atención de lunes a viernes.`,
   },
 } as const

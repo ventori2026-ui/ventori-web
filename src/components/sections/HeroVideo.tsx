@@ -16,8 +16,13 @@ const CLIP_DURATION = 7000
  *   depende de la descarga del mp4.
  * - Solo se reproduce el clip visible. Con `autoPlay` en los tres, los tres
  *   quedaban decodificando a la vez y consumían CPU sin que se vieran.
- * - Con `prefers-reduced-motion` no se monta ningún `<video>`: se queda el
- *   póster del primer clip como imagen fija.
+ * - Con `prefers-reduced-motion` no se reproduce nada ni se descarga ningún
+ *   mp4: se queda el póster del primer clip como imagen fija.
+ *
+ * El markup es idéntico en los dos casos, incluido `preload`. La preferencia
+ * solo cambia lo que hacen los efectos: renderizar `<img>` en un caso y
+ * `<video>` en el otro rompía la hidratación, porque `useReducedMotion()`
+ * devuelve valores distintos en servidor y en cliente.
  */
 export function HeroVideo() {
   const prefersReducedMotion = useReducedMotion()
@@ -41,7 +46,13 @@ export function HeroVideo() {
       if (!video) return
 
       if (index === active) {
-        // Cada clip reaparece desde el principio, no a media reproducción.
+        // La descarga se pide aquí y no con un atributo, para no alterar el
+        // markup servido: así los usuarios con movimiento reducido nunca
+        // llegan a bajar el mp4.
+        if (video.preload !== 'auto') {
+          video.preload = 'auto'
+          video.load()
+        }
         video.currentTime = 0
         void video.play().catch(() => {
           // Si el navegador bloquea la reproducción automática, queda el póster.
@@ -62,23 +73,18 @@ export function HeroVideo() {
             index === active ? 'opacity-100' : 'opacity-0',
           )}
         >
-          {prefersReducedMotion ? (
-            // eslint-disable-next-line @next/next/no-img-element -- el póster ya está dimensionado y sirve de fondo a sangre
-            <img src={clip.poster} alt="" className="size-full object-cover" />
-          ) : (
-            <video
-              ref={(node) => {
-                videoRefs.current[index] = node
-              }}
-              src={clip.src}
-              poster={clip.poster}
-              muted
-              loop
-              playsInline
-              preload={index === 0 ? 'auto' : 'metadata'}
-              className="size-full object-cover"
-            />
-          )}
+          <video
+            ref={(node) => {
+              videoRefs.current[index] = node
+            }}
+            src={clip.src}
+            poster={clip.poster}
+            muted
+            loop
+            playsInline
+            preload="none"
+            className="size-full object-cover"
+          />
         </div>
       ))}
 

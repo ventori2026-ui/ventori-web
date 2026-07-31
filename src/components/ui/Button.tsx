@@ -66,7 +66,8 @@ export function ButtonLink({
 }
 
 interface ButtonProps
-  extends ButtonBaseProps,
+  extends
+    ButtonBaseProps,
     Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> {}
 
 export function Button({

@@ -108,7 +108,11 @@ export const HERO_VIDEOS = [
     query: 'aerial drone city highway traffic overpass',
     alt: 'Sobrevuelo de un intercambiador vial urbano',
   },
-  { key: 'hero3', query: 'aerial bridge river infrastructure', alt: 'Sobrevuelo de un puente sobre un río' },
+  {
+    key: 'hero3',
+    query: 'aerial bridge river infrastructure',
+    alt: 'Sobrevuelo de un puente sobre un río',
+  },
 ]
 
 /** Ancho máximo al que se guardan las fotos. Suficiente para paneles a sangre. */

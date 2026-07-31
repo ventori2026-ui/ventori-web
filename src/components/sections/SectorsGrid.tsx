@@ -34,8 +34,8 @@ export function SectorsGrid({ withHeading = true }: SectorsGridProps) {
             </Reveal>
             <Reveal delay={0.16}>
               <p className="mt-6 text-base leading-relaxed text-navy-950/70 md:text-lg">
-                Atendemos proyectos de infraestructura y equipamiento en el sector público y privado,
-                con el rigor documental y técnico que exige cada uno.
+                Atendemos proyectos de infraestructura y equipamiento en el sector público y
+                privado, con el rigor documental y técnico que exige cada uno.
               </p>
             </Reveal>
           </div>
@@ -58,7 +58,9 @@ export function SectorsGrid({ withHeading = true }: SectorsGridProps) {
                   {String(index + 1).padStart(2, '0')}
                 </span>
               </div>
-              <h3 className="mt-5 text-xl font-bold tracking-tight text-navy-950">{sector.title}</h3>
+              <h3 className="mt-5 text-xl font-bold tracking-tight text-navy-950">
+                {sector.title}
+              </h3>
               <p className="mt-3 text-sm leading-relaxed text-navy-950/70">{sector.description}</p>
             </StaggerItem>
           ))}

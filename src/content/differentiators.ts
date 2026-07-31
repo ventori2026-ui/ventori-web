@@ -26,8 +26,7 @@ export const DIFFERENTIATORS: readonly Differentiator[] = [
   {
     id: 'soluciones-integrales',
     title: 'Soluciones integrales adaptadas a cada cliente',
-    description:
-      'Ajustamos el alcance a la realidad del proyecto y de la entidad, no al revés.',
+    description: 'Ajustamos el alcance a la realidad del proyecto y de la entidad, no al revés.',
     icon: 'Layers',
   },
   {
@@ -40,8 +39,7 @@ export const DIFFERENTIATORS: readonly Differentiator[] = [
   {
     id: 'innovacion',
     title: 'Enfoque en innovación y sostenibilidad',
-    description:
-      'Buscamos soluciones que optimicen recursos y sostengan su valor en el tiempo.',
+    description: 'Buscamos soluciones que optimicen recursos y sostengan su valor en el tiempo.',
     icon: 'Leaf',
   },
   {

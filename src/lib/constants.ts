@@ -73,8 +73,18 @@ export const SOCIAL = {
 /** Devuelve solo los canales de contacto que ya tienen dato cargado. */
 export function getContactChannels() {
   return [
-    { id: 'email', label: 'Correo electrónico', value: CONTACT.email, href: `mailto:${CONTACT.email}` },
-    { id: 'phone', label: 'Teléfono', value: CONTACT.phone, href: `tel:${CONTACT.phone.replace(/\s/g, '')}` },
+    {
+      id: 'email',
+      label: 'Correo electrónico',
+      value: CONTACT.email,
+      href: `mailto:${CONTACT.email}`,
+    },
+    {
+      id: 'phone',
+      label: 'Teléfono',
+      value: CONTACT.phone,
+      href: `tel:${CONTACT.phone.replace(/\s/g, '')}`,
+    },
     { id: 'address', label: 'Dirección', value: CONTACT.address, href: null },
     { id: 'city', label: 'Ciudad', value: CONTACT.city, href: null },
   ].filter((channel) => channel.value.length > 0)
@@ -116,7 +126,46 @@ export type FormStatus = (typeof FORM_STATUS)[keyof typeof FORM_STATUS]
 export const FORM_MESSAGES = {
   success: 'Gracias por escribirnos. Un miembro del equipo se pondrá en contacto contigo.',
   error: 'No pudimos enviar tu mensaje. Intenta de nuevo o escríbenos directamente por correo.',
-  rateLimited: 'Recibimos varios envíos desde esta conexión. Espera un momento antes de volver a intentar.',
+  rateLimited:
+    'Recibimos varios envíos desde esta conexión. Espera un momento antes de volver a intentar.',
+} as const
+
+/**
+ * Ajustes del aro de metal líquido de los CTA primarios.
+ *
+ * `colorTint` es la terracota de marca y `colorBack` el navy, de modo que el
+ * efecto se mantiene dentro de la identidad en vez del gris del componente
+ * original. Los valores van en RGBA normalizado (0–1), que es lo que espera el
+ * shader.
+ */
+export const LIQUID_METAL = {
+  speed: {
+    idle: 0.5,
+    hover: 1.2,
+  },
+  uniforms: {
+    // #d88b64
+    u_colorTint: [0.847, 0.545, 0.392, 1] as [number, number, number, number],
+    // #010133
+    u_colorBack: [0.004, 0.004, 0.2, 1] as [number, number, number, number],
+    /*
+     * Pocas repeticiones y transiciones muy suaves: sobre un aro de 4 px, más
+     * bandas producen astillas de luz duras que se leen como un fallo de
+     * render en vez de como metal.
+     */
+    u_repetition: 2,
+    u_softness: 0.85,
+    u_shiftRed: 0.3,
+    u_shiftBlue: 0.3,
+    u_distortion: 0.25,
+    u_contour: 0,
+    u_angle: 45,
+    u_scale: 6,
+    u_shape: 1,
+    u_offsetX: 0.1,
+    u_offsetY: -0.1,
+    u_isImage: false,
+  },
 } as const
 
 /** Parámetros de la animación de entrada. Las primitivas de motion los consumen. */

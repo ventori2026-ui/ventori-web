@@ -26,7 +26,8 @@ export function ServicesDetail() {
                     <div className="flex items-center gap-4">
                       <Icon name={service.icon} className="size-8 text-terracota-400" />
                       <span className="font-display text-sm font-semibold tabular-nums text-white/40">
-                        {String(index + 1).padStart(2, '0')} / {String(SERVICES.length).padStart(2, '0')}
+                        {String(index + 1).padStart(2, '0')} /{' '}
+                        {String(SERVICES.length).padStart(2, '0')}
                       </span>
                     </div>
                   </Reveal>
