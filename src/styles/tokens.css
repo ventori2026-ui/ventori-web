@@ -114,4 +114,14 @@
 
   /* Paso de la retícula técnica de fondo */
   --grid-step: 4.5rem;
+
+  /*
+   * Espacio que hay que dejar libre al pie en móvil: el alto de la barra fija de
+   * acciones más el indicador de inicio de los iPhone.
+   *
+   * Lo consumen el `body` —para que el pie no quede debajo de la barra— y el
+   * hero, que al medir `100dvh` no se beneficia del relleno del body y taparía
+   * sus propios botones. Un solo token evita que los dos se desincronicen.
+   */
+  --mobile-bar-clearance: calc(4rem + env(safe-area-inset-bottom));
 }

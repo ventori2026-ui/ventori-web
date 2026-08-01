@@ -6,6 +6,11 @@ interface LogoProps {
   className?: string
   /** Sobre fondo claro el texto va en navy; sobre navy, en blanco. */
   tone?: 'dark' | 'light'
+  /**
+   * Se dispara al pulsar. Lo usa el menú móvil para cerrarse: sin esto, tocar el
+   * logotipo navegaría al inicio dejando el menú abierto por encima.
+   */
+  onNavigate?: () => void
 }
 
 /**
@@ -20,11 +25,12 @@ interface LogoProps {
  * El enlace envuelve marca y nombre en un solo destino, con `aria-label`, para
  * que un lector de pantalla anuncie "Ventori, inicio" en vez de leer el trazado.
  */
-export function Logo({ className, tone = 'light' }: LogoProps) {
+export function Logo({ className, tone = 'light', onNavigate }: LogoProps) {
   return (
     <Link
       href={ROUTES.home}
       aria-label={`${SITE.name}, ir al inicio`}
+      onClick={onNavigate}
       /* `py-2` no es aire visual: eleva el área táctil del enlace de 32 px a los
          48 que exigen HIG y Material. El logotipo es el único camino de vuelta al
          inicio desde una página interna. */

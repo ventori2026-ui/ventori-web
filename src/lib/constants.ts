@@ -48,6 +48,22 @@ export const NAV_LINKS = [
 ] as const
 
 /**
+ * Barra de acciones fija al pie, solo en móvil.
+ *
+ * En una pantalla de teléfono el pulgar llega al borde inferior y no a la
+ * esquina superior derecha, que es donde vivía el botón de menú. Las dos
+ * acciones que importan —abrir el menú y contactar— bajan ahí.
+ *
+ * `call` solo aparece cuando `CONTACT.phone` tenga dato: un botón de llamar sin
+ * número al que llamar es peor que no tenerlo.
+ */
+export const MOBILE_BAR = {
+  menu: { label: 'Menú', open: 'Abrir menú', close: 'Cerrar menú' },
+  call: { label: 'Llamar' },
+  cta: { label: 'Contacto', href: ROUTES.contact },
+} as const
+
+/**
  * Datos de contacto.
  *
  * PENDIENTE DEL CLIENTE: correo, teléfono, dirección y ciudad llegaron en blanco

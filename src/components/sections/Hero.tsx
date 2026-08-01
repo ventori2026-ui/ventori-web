@@ -23,7 +23,7 @@ import { formatIndex } from '@/lib/utils'
  */
 export function Hero() {
   return (
-    <section className="relative isolate flex min-h-dvh flex-col justify-end overflow-hidden pt-(--header-height) pb-16 sm:pb-20 lg:pt-(--header-height-lg) lg:pb-24">
+    <section className="relative isolate flex min-h-dvh flex-col justify-end overflow-hidden pt-(--header-height) pb-[calc(var(--mobile-bar-clearance)+2rem)] sm:pb-[calc(var(--mobile-bar-clearance)+3rem)] lg:pt-(--header-height-lg) lg:pb-24">
       <HeroVideo />
 
       <Container width="wide" className="relative">

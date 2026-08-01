@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Archivo, Inter, JetBrains_Mono } from 'next/font/google'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
+import { MobileBar } from '@/components/layout/MobileBar'
 import { MotionProvider } from '@/components/motion/MotionProvider'
 import { ScrollProgress } from '@/components/motion/ScrollProgress'
 import { PAGES } from '@/content/pages'
@@ -83,7 +84,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
       </head>
 
-      <body className="flex min-h-full flex-col bg-navy-950">
+      {/*
+        El relleno inferior reserva el alto de `<MobileBar />`, que es fija, más
+        el indicador de inicio de los iPhone. Va en el `body` y no en el `main`
+        porque el pie es hermano del main y también quedaría tapado.
+      */}
+      <body className="flex min-h-full flex-col bg-navy-950 pb-(--mobile-bar-clearance) lg:pb-0">
         <a
           href="#contenido"
           className="sr-only bevel-sm focus:not-sr-only focus:fixed focus:top-6 focus:left-6 focus:z-[70] focus:bg-terracota-500 focus:px-5 focus:py-3 focus:font-mono focus:text-label focus:uppercase focus:text-navy-950"
@@ -100,6 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
 
           <Footer />
+          <MobileBar />
         </MotionProvider>
 
         <script
