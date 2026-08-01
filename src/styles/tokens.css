@@ -1,32 +1,47 @@
 /*
- * Tokens de marca Ventori.
+ * Tokens de marca Ventori — dirección de arte "Estructura".
  *
- * Tres colores base: navy #010133, terracota #d88b64, blanco.
- * Las escalas se derivan de esos tres para tener estados de hover, bordes y
- * superficies sin introducir colores nuevos.
+ * Todo el lenguaje visual se deriva del isotipo: cuatro vigas en paralelogramo
+ * biseladas a 45° que forman la V. De ahí salen las tres decisiones que
+ * gobiernan el sistema:
+ *
+ *   1. Radio 0 en todo. La curva no existe en esta marca.
+ *   2. El bisel diagonal (`--bevel`) es el único recorte permitido, y siempre
+ *      en las mismas dos esquinas —superior derecha e inferior izquierda— para
+ *      que lea como una pieza cortada y no como un adorno.
+ *   3. Retícula técnica de fondo, como papel de plano.
+ *
+ * Paleta: navy #010133, terracota #d88b64, blanco. El resto son escalas
+ * derivadas —incluido el "papel", que es terracota desaturada— para no
+ * introducir un cuarto color.
  *
  * Contraste verificado (WCAG 2.1):
- *   blanco sobre navy-950 ....... 19.9:1  AAA
- *   terracota-500 sobre navy-950 . 7.4:1  AAA (texto grande y normal)
- *   navy-950 sobre terracota-500 . 7.4:1  AAA
- *   terracota-500 sobre blanco ... 2.7:1  NO PASA — ver AGENTS.md
+ *   blanco        sobre navy-950 ...... 19.9:1  AAA
+ *   navy-950      sobre paper-50 ...... 18.6:1  AAA
+ *   terracota-500 sobre navy-950 ......  7.4:1  AAA
+ *   navy-950      sobre terracota-500 .  7.4:1  AAA
+ *   navy-200      sobre navy-950 ......  9.4:1  AAA (texto secundario en oscuro)
+ *   navy-700      sobre paper-50 ......  11.9:1 AAA (texto secundario en claro)
+ *   terracota-500 sobre blanco ........  2.7:1  NO PASA — ver AGENTS.md
  */
 
 @theme {
-  /* Navy — fondo dominante del sitio */
+  /* ── Navy · fondo dominante ─────────────────────────────────────────── */
   --color-navy-50: #f0f0fb;
   --color-navy-100: #d9d9f5;
   --color-navy-200: #b0b0ea;
-  --color-navy-300: #7a7ad9;
-  --color-navy-400: #4a4ac2;
-  --color-navy-500: #2727a3;
-  --color-navy-600: #1b1b82;
-  --color-navy-700: #121268;
-  --color-navy-800: #0b0b52;
-  --color-navy-900: #05053f;
+  --color-navy-300: #8f8fd8;
+  --color-navy-400: #6a6ac0;
+  --color-navy-500: #4a4aa4;
+  --color-navy-600: #343484;
+  --color-navy-700: #232368;
+  --color-navy-800: #141452;
+  --color-navy-900: #08083d;
   --color-navy-950: #010133;
+  /* Un paso por debajo del navy base, para el bloque más profundo de la página */
+  --color-navy-975: #01012a;
 
-  /* Terracota — acento, bandas de corte, botones */
+  /* ── Terracota · acento estructural ─────────────────────────────────── */
   --color-terracota-50: #fdf6f2;
   --color-terracota-100: #f9e9e0;
   --color-terracota-200: #f2d2c0;
@@ -39,31 +54,64 @@
   --color-terracota-900: #6d3d2a;
   --color-terracota-950: #3a1e14;
 
-  /* Tipografía */
-  --font-display: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  /* ── Papel · superficies claras, derivadas de la terracota ──────────── */
+  --color-paper-50: #fbf8f6;
+  --color-paper-100: #f5efeb;
+  --color-paper-200: #e9dfd8;
+  --color-paper-300: #d9cabf;
+
+  /* ── Tipografía ─────────────────────────────────────────────────────── */
+  /* Archivo lleva eje de anchura: el display va expandido, el resto normal. */
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
-  /* Escala de display, calcada del ritmo de la referencia */
-  --text-display-sm: 2rem;
-  --text-display-sm--line-height: 1.15;
+  /*
+   * Escala de display. `clamp` en vez de saltos por breakpoint: el titular crece
+   * de forma continua y no se rompe en los anchos intermedios.
+   *
+   * El extremo inferior está calculado sobre el ancho útil de un teléfono de
+   * 375 px —327 px descontando los márgenes de `<Container>`— y contra la
+   * palabra más larga del copy, "Infraestructura". Los titulares se declaran
+   * partidos en líneas fijas y una palabra no puede romperse, así que un mínimo
+   * demasiado alto no refluye: se sale de la pantalla.
+   */
+  --text-display-sm: clamp(1.625rem, 1.1rem + 2.2vw, 2.5rem);
+  --text-display-sm--line-height: 1.1;
   --text-display-sm--letter-spacing: -0.02em;
-  --text-display-md: 2.75rem;
-  --text-display-md--line-height: 1.1;
-  --text-display-md--letter-spacing: -0.025em;
-  --text-display-lg: 3.5rem;
-  --text-display-lg--line-height: 1.05;
-  --text-display-lg--letter-spacing: -0.03em;
-  --text-display-xl: 4.5rem;
-  --text-display-xl--line-height: 1;
-  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-md: clamp(1.875rem, 1.3rem + 2.9vw, 3.75rem);
+  --text-display-md--line-height: 1.05;
+  --text-display-md--letter-spacing: -0.03em;
+  --text-display-lg: clamp(2rem, 1rem + 4.7vw, 5.25rem);
+  --text-display-lg--line-height: 1;
+  --text-display-lg--letter-spacing: -0.035em;
+  --text-display-xl: clamp(2.125rem, 1rem + 5.55vw, 6rem);
+  --text-display-xl--line-height: 0.94;
+  --text-display-xl--letter-spacing: -0.04em;
 
-  /* Motion — una sola fuente de verdad para duraciones y curvas */
+  /* Etiqueta técnica en monoespaciada: eyebrows, índices, metadatos */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.18em;
+
+  /* ── Motion · una sola fuente de verdad para curvas ─────────────────── */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root {
   /* Alturas del header: el hero las usa para calcular su offset */
-  --header-height: 4.5rem;
-  --header-height-lg: 5.5rem;
+  --header-height: 4.25rem;
+  --header-height-lg: 5.25rem;
+
+  /*
+   * Bisel de marca. Escala con el viewport: un corte fijo de 24 px se ve
+   * tímido sobre una imagen a sangre y desproporcionado sobre un botón.
+   */
+  --bevel: clamp(0.875rem, 0.5rem + 1.6vw, 2rem);
+  --bevel-sm: 0.625rem;
+
+  /* Paso de la retícula técnica de fondo */
+  --grid-step: 4.5rem;
 }

@@ -1,23 +1,28 @@
 'use client'
 
 import { motion, useScroll, useSpring } from 'framer-motion'
+import { MOTION } from '@/lib/constants'
 
 /**
- * Barra fina de progreso de lectura, anclada bajo el header.
+ * Viga de progreso en el borde superior de la ventana.
  *
- * Se oculta con movimiento reducido desde CSS (`globals.css`) y no con una rama
- * en JavaScript: así el markup de servidor y de cliente coincide.
+ * Se lee como una de las vigas del isotipo avanzando: es la única pieza que
+ * acompaña al usuario durante toda la página, así que se mantiene en 2 px y en
+ * terracota, sin sombra ni brillo.
+ *
+ * `data-scroll-progress` la retira por completo con movimiento reducido, desde
+ * `globals.css`: es movimiento continuo y sin carga informativa crítica.
  */
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 })
+  const scaleX = useSpring(scrollYProgress, MOTION.spring)
 
   return (
     <motion.div
       data-scroll-progress
-      className="fixed inset-x-0 top-0 z-60 h-0.5 origin-left bg-terracota-500"
-      style={{ scaleX }}
       aria-hidden="true"
+      style={{ scaleX }}
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-terracota-500"
     />
   )
 }

@@ -1,40 +1,77 @@
+import Image from 'next/image'
+import { Headline } from '@/components/motion/Headline'
 import { Reveal } from '@/components/motion/Reveal'
-import { LiquidMetalButtonLink } from '@/components/ui/LiquidMetalButton'
+import { Rule } from '@/components/motion/Rule'
+import { Button } from '@/components/ui/Button'
 import { Container } from '@/components/ui/Container'
-import { MediaFrame } from '@/components/ui/MediaFrame'
 import { CTA_BAND } from '@/content/about'
+import { MEDIA } from '@/content/media'
 import { ROUTES } from '@/lib/constants'
+import { formatIndex } from '@/lib/utils'
 
 /**
- * Cierre a sangre: fotografía de fondo con una tarjeta oscura encima, como el
- * bloque final de la referencia. Reutilizado por la home y las internas.
+ * Banda de cierre, reutilizada al final de la home y de cada página interna.
+ *
+ * La fotografía va a sangre y sin parallax: es el último bloque antes del pie y
+ * un desplazamiento aquí dejaría ver el borde de la imagen justo donde la página
+ * deja de tener scroll por delante para compensarlo.
+ *
+ * La imagen se sirve con `next/image` directo en vez de con `<MediaFrame>`
+ * porque este bloque no lleva bisel: es la única pieza a sangre completa del
+ * sitio, y biselarla partiría la banda en diagonal contra el pie.
  */
-export function CtaBand() {
+export function CtaBand({ index }: { index: number }) {
+  const asset = MEDIA.ctaBand
+
   return (
-    <section className="relative" aria-labelledby="cta">
-      <MediaFrame
-        media="ctaBand"
-        ratio="fill"
-        overlay="soft"
+    <section className="relative isolate overflow-hidden bg-navy-950">
+      <Image
+        src={asset.src}
+        alt=""
+        aria-hidden="true"
+        fill
         sizes="100vw"
-        className="min-h-[560px] md:min-h-[520px]"
-      >
-        <Container className="flex h-full items-center py-20">
-          <Reveal className="w-full">
-            <div className="max-w-2xl bg-navy-950/90 p-9 backdrop-blur-sm md:p-14">
-              <h2 id="cta" className="text-display-sm font-extrabold text-white md:text-display-md">
-                {CTA_BAND.heading}
-              </h2>
-              <p className="mt-6 text-base leading-relaxed text-white/75 md:text-lg">
-                {CTA_BAND.text}
-              </p>
-              <LiquidMetalButtonLink href={ROUTES.contact} size="lg" className="mt-9" withArrow>
-                {CTA_BAND.cta}
-              </LiquidMetalButtonLink>
-            </div>
-          </Reveal>
-        </Container>
-      </MediaFrame>
+        className="object-cover"
+      />
+
+      {/* Velo doble: uno general para el contraste y otro desde la izquierda,
+          que es donde se apoya el texto. */}
+      <span aria-hidden="true" className="absolute inset-0 bg-navy-950/75" />
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/60 to-navy-950/30"
+      />
+
+      <Container className="relative py-24 sm:py-32 lg:py-40">
+        <Reveal>
+          <div className="flex items-center gap-4">
+            <span className="font-mono text-label tabular text-terracota-500">
+              {formatIndex(index)}
+            </span>
+            <Rule className="w-10 flex-none text-navy-600" delay={0.1} />
+            <span className="font-mono text-label uppercase text-navy-200">{CTA_BAND.eyebrow}</span>
+          </div>
+        </Reveal>
+
+        <Headline
+          as="h2"
+          lines={CTA_BAND.lines}
+          delay={0.15}
+          className="mt-7 max-w-3xl text-display-lg font-semibold text-white"
+        />
+
+        <Reveal delay={0.35}>
+          <p className="mt-7 max-w-xl text-base leading-relaxed text-navy-100 sm:text-lg">
+            {CTA_BAND.text}
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.45}>
+          <div className="mt-10">
+            <Button href={ROUTES.contact}>{CTA_BAND.cta}</Button>
+          </div>
+        </Reveal>
+      </Container>
     </section>
   )
 }

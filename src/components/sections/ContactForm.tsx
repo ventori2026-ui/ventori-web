@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
-import { LiquidMetalButton } from '@/components/ui/LiquidMetalButton'
+import { Button } from '@/components/ui/Button'
 import {
   CONTACT_FORM,
   CONTACT_SUBJECTS,
@@ -12,18 +12,71 @@ import {
   FORM_STATUS,
   type FormStatus,
 } from '@/lib/constants'
-import { contactSchema, type ContactInput } from '@/lib/validation/contact'
 import { cn } from '@/lib/utils'
+import { contactSchema, type ContactInput } from '@/lib/validation/contact'
 
-const FIELD_CLASS =
-  'w-full border-b border-white/25 bg-transparent py-3 text-white placeholder:text-white/35 transition-colors duration-200 focus:border-terracota-500 focus:outline-none'
+/* Un solo juego de clases para todos los campos: mezclar alturas o grosores de
+   borde entre un input y un select es de lo que más delata un formulario. */
+const FIELD =
+  'min-h-12 w-full border border-navy-700 bg-navy-900 px-4 py-3 text-base text-white ' +
+  'placeholder:text-navy-400 transition-colors duration-200 ' +
+  'hover:border-navy-600 focus:border-terracota-500 focus:outline-none'
 
-function FieldError({ id, message }: { id: string; message?: string }) {
-  if (!message) return null
+const FIELD_INVALID = 'border-terracota-400'
+
+const LABEL = 'block font-mono text-label uppercase text-navy-200'
+
+interface FieldShellProps {
+  id: string
+  label: string
+  /** Texto de ayuda permanente. No se sustituye por el placeholder. */
+  hint?: string
+  error?: string
+  required?: boolean
+  children: React.ReactNode
+}
+
+/**
+ * Envoltura común de cada campo: etiqueta visible, ayuda, y error debajo del
+ * control al que se refiere.
+ *
+ * El error va en un `role="alert"`, de modo que un lector de pantalla lo anuncia
+ * en cuanto aparece sin que el usuario tenga que ir a buscarlo.
+ */
+function FieldShell({ id, label, hint, error, required, children }: FieldShellProps) {
   return (
-    <p id={id} role="alert" className="mt-2 text-sm text-terracota-300">
-      {message}
-    </p>
+    <div>
+      <label htmlFor={id} className={LABEL}>
+        {label}
+        {required && (
+          <>
+            <span aria-hidden="true" className="ml-1 text-terracota-500">
+              *
+            </span>
+            <span className="sr-only"> (obligatorio)</span>
+          </>
+        )}
+      </label>
+
+      {hint && (
+        <p id={`${id}-hint`} className="mt-1.5 text-xs text-navy-300">
+          {hint}
+        </p>
+      )}
+
+      <div className="mt-2.5">{children}</div>
+
+      {error && (
+        <p
+          id={`${id}-error`}
+          role="alert"
+          className="mt-2 flex items-start gap-1.5 text-sm text-terracota-300"
+        >
+          <AlertCircle aria-hidden="true" strokeWidth={1.5} className="mt-0.5 size-4 shrink-0" />
+          {error}
+        </p>
+      )}
+    </div>
   )
 }
 
@@ -35,13 +88,17 @@ export function ContactForm() {
     register,
     handleSubmit,
     reset,
+    setFocus,
     formState: { errors },
   } = useForm<ContactInput>({
     resolver: zodResolver(contactSchema),
-    defaultValues: { subject: CONTACT_SUBJECTS[0].value, website: '' },
+    /* Se valida al salir del campo, no en cada pulsación: marcar en rojo un
+       correo a medio escribir es corregir al usuario antes de que termine. */
+    mode: 'onBlur',
+    defaultValues: { subject: CONTACT_SUBJECTS[0].value },
   })
 
-  const onSubmit = handleSubmit(async (values) => {
+  const onSubmit = async (values: ContactInput) => {
     setStatus(FORM_STATUS.submitting)
     setFeedback('')
 
@@ -67,111 +124,93 @@ export function ContactForm() {
       setStatus(FORM_STATUS.error)
       setFeedback(FORM_MESSAGES.error)
     }
-  })
+  }
 
-  const isSubmitting = status === FORM_STATUS.submitting
+  /* Con errores de validación, el foco va al primer campo que falla. Sin esto,
+     en un formulario largo el usuario recibe el aviso y no sabe dónde mirar. */
+  const onInvalid = (formErrors: typeof errors) => {
+    const firstField = Object.keys(formErrors)[0] as keyof ContactInput | undefined
+    if (firstField) setFocus(firstField)
+  }
+
+  const submitting = status === FORM_STATUS.submitting
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-8">
-      {/* Campo trampa: oculto para personas, visible para bots. */}
-      <div className="absolute left-[-9999px]" aria-hidden="true">
-        <label htmlFor="website">No completar</label>
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="space-y-7">
+      {/*
+        Campo trampa. `tabIndex={-1}` y `aria-hidden` lo sacan del recorrido de
+        teclado y del árbol de accesibilidad: solo un bot que rellena por
+        atributo `name` puede escribir aquí.
+      */}
+      <div aria-hidden="true" className="absolute -left-[9999px]">
+        <label htmlFor="website">No rellenar</label>
         <input id="website" type="text" tabIndex={-1} autoComplete="off" {...register('website')} />
       </div>
 
-      <div className="grid gap-8 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="name"
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
-          >
-            Nombre completo
-          </label>
+      <div className="grid gap-7 sm:grid-cols-2">
+        <FieldShell id="name" label="Nombre completo" error={errors.name?.message} required>
           <input
             id="name"
             type="text"
             autoComplete="name"
             aria-invalid={Boolean(errors.name)}
-            aria-describedby={errors.name ? 'error-name' : undefined}
-            className={cn(FIELD_CLASS, 'mt-3')}
-            placeholder="Tu nombre"
+            aria-describedby={errors.name ? 'name-error' : undefined}
+            className={cn(FIELD, errors.name && FIELD_INVALID)}
             {...register('name')}
           />
-          <FieldError id="error-name" message={errors.name?.message} />
-        </div>
+        </FieldShell>
 
-        <div>
-          <label
-            htmlFor="email"
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
-          >
-            Correo electrónico
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            aria-invalid={Boolean(errors.email)}
-            aria-describedby={errors.email ? 'error-email' : undefined}
-            className={cn(FIELD_CLASS, 'mt-3')}
-            placeholder="nombre@entidad.gov.co"
-            {...register('email')}
-          />
-          <FieldError id="error-email" message={errors.email?.message} />
-        </div>
-
-        <div>
-          <label
-            htmlFor="phone"
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
-          >
-            Teléfono
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            autoComplete="tel"
-            aria-invalid={Boolean(errors.phone)}
-            aria-describedby={errors.phone ? 'error-phone' : undefined}
-            className={cn(FIELD_CLASS, 'mt-3')}
-            placeholder="+57 300 000 0000"
-            {...register('phone')}
-          />
-          <FieldError id="error-phone" message={errors.phone?.message} />
-        </div>
-
-        <div>
-          <label
-            htmlFor="organization"
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
-          >
-            Entidad o empresa{' '}
-            <span className="normal-case tracking-normal text-white/40">(opcional)</span>
-          </label>
+        <FieldShell
+          id="organization"
+          label="Entidad o empresa"
+          hint="Opcional"
+          error={errors.organization?.message}
+        >
           <input
             id="organization"
             type="text"
             autoComplete="organization"
-            className={cn(FIELD_CLASS, 'mt-3')}
-            placeholder="Nombre de la entidad"
+            aria-invalid={Boolean(errors.organization)}
+            aria-describedby={errors.organization ? 'organization-error' : undefined}
+            className={cn(FIELD, errors.organization && FIELD_INVALID)}
             {...register('organization')}
           />
-          <FieldError id="error-organization" message={errors.organization?.message} />
-        </div>
+        </FieldShell>
+
+        <FieldShell id="email" label="Correo electrónico" error={errors.email?.message} required>
+          {/* `type="email"` abre el teclado con arroba en móvil. */}
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? 'email-error' : undefined}
+            className={cn(FIELD, errors.email && FIELD_INVALID)}
+            {...register('email')}
+          />
+        </FieldShell>
+
+        <FieldShell id="phone" label="Teléfono" error={errors.phone?.message} required>
+          <input
+            id="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            aria-invalid={Boolean(errors.phone)}
+            aria-describedby={errors.phone ? 'phone-error' : undefined}
+            className={cn(FIELD, errors.phone && FIELD_INVALID)}
+            {...register('phone')}
+          />
+        </FieldShell>
       </div>
 
-      <div>
-        <label
-          htmlFor="subject"
-          className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
-        >
-          Asunto
-        </label>
+      <FieldShell id="subject" label="Asunto" error={errors.subject?.message} required>
         <select
           id="subject"
           aria-invalid={Boolean(errors.subject)}
-          aria-describedby={errors.subject ? 'error-subject' : undefined}
-          className={cn(FIELD_CLASS, 'mt-3 [&>option]:bg-navy-900')}
+          aria-describedby={errors.subject ? 'subject-error' : undefined}
+          className={cn(FIELD, 'cursor-pointer', errors.subject && FIELD_INVALID)}
           {...register('subject')}
         >
           {CONTACT_SUBJECTS.map((subject) => (
@@ -180,56 +219,61 @@ export function ContactForm() {
             </option>
           ))}
         </select>
-        <FieldError id="error-subject" message={errors.subject?.message} />
-      </div>
+      </FieldShell>
 
-      <div>
-        <label
-          htmlFor="message"
-          className="text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400"
-        >
-          Cuéntanos sobre el proyecto
-        </label>
+      <FieldShell
+        id="message"
+        label="Mensaje"
+        hint={`Etapa del proyecto, alcance estimado y qué necesitas resolver. Mínimo ${CONTACT_FORM.minMessageLength} caracteres.`}
+        error={errors.message?.message}
+        required
+      >
         <textarea
           id="message"
-          rows={5}
-          maxLength={CONTACT_FORM.maxMessageLength}
+          rows={6}
           aria-invalid={Boolean(errors.message)}
-          aria-describedby={errors.message ? 'error-message' : undefined}
-          className={cn(FIELD_CLASS, 'mt-3 resize-y')}
-          placeholder="Etapa del proyecto, alcance estimado y qué necesitas resolver."
+          aria-describedby={cn('message-hint', errors.message && 'message-error')}
+          className={cn(FIELD, 'resize-y', errors.message && FIELD_INVALID)}
           {...register('message')}
         />
-        <FieldError id="error-message" message={errors.message?.message} />
+      </FieldShell>
+
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <Button type="submit" disabled={submitting} withArrow={!submitting}>
+          {submitting ? 'Enviando…' : 'Enviar mensaje'}
+        </Button>
+
+        <p className="font-mono text-label uppercase text-navy-300">
+          <span aria-hidden="true" className="text-terracota-500">
+            *
+          </span>{' '}
+          Campos obligatorios
+        </p>
       </div>
 
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-        <LiquidMetalButton
-          type="submit"
-          size="lg"
-          disabled={isSubmitting}
-          withArrow={!isSubmitting}
-        >
-          {isSubmitting ? 'Enviando…' : 'Enviar mensaje'}
-        </LiquidMetalButton>
-
-        {/* `aria-live` anuncia el resultado sin mover el foco del usuario. */}
-        <p
-          aria-live="polite"
-          className={cn(
-            'flex items-start gap-2 text-sm',
-            status === FORM_STATUS.success && 'text-terracota-300',
-            status === FORM_STATUS.error && 'text-terracota-200',
-          )}
-        >
-          {status === FORM_STATUS.success ? (
-            <CheckCircle2 className="mt-0.5 size-4 shrink-0" strokeWidth={2} aria-hidden="true" />
-          ) : null}
-          {status === FORM_STATUS.error ? (
-            <AlertCircle className="mt-0.5 size-4 shrink-0" strokeWidth={2} aria-hidden="true" />
-          ) : null}
-          {feedback}
-        </p>
+      {/*
+        Región viva permanente: el mensaje de resultado se anuncia al aparecer
+        sin robarle el foco a quien esté navegando con teclado. Debe existir en
+        el DOM desde el principio, o el lector de pantalla no llega a observarla.
+      */}
+      <div aria-live="polite" className="min-h-0">
+        {feedback && (
+          <div
+            className={cn(
+              'flex items-start gap-3 bevel-sm p-4 text-sm',
+              status === FORM_STATUS.success
+                ? 'bg-terracota-500 text-navy-950'
+                : 'border border-terracota-400 bg-navy-900 text-terracota-200',
+            )}
+          >
+            {status === FORM_STATUS.success ? (
+              <CheckCircle2 aria-hidden="true" strokeWidth={1.5} className="mt-0.5 size-5 shrink-0" />
+            ) : (
+              <AlertCircle aria-hidden="true" strokeWidth={1.5} className="mt-0.5 size-5 shrink-0" />
+            )}
+            <p>{feedback}</p>
+          </div>
+        )}
       </div>
     </form>
   )

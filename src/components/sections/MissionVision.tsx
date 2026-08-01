@@ -3,32 +3,58 @@ import { Container } from '@/components/ui/Container'
 import { Icon } from '@/components/ui/Icon'
 import { Section } from '@/components/ui/Section'
 import { MISSION, VISION } from '@/content/about'
+import { formatIndex } from '@/lib/utils'
 
-/** Misión y visión a doble columna, sobre el corte claro del sitio. */
-export function MissionVision() {
+/**
+ * Misión y visión, en dos paneles biselados.
+ *
+ * Uno sobre papel y otro en terracota: son dos declaraciones del mismo peso y
+ * darles el mismo tratamiento las convertiría en un párrafo doble. El contraste
+ * de superficie es lo que las separa como piezas.
+ *
+ * Los dos paneles entran enmascarados desde abajo con 120 ms de diferencia, lo
+ * justo para que se lean como dos piezas colocadas y no como un bloque que
+ * aparece.
+ */
+export function MissionVision({ index }: { index: number }) {
+  const panels = [
+    {
+      ...MISSION,
+      surface: 'bg-paper-100 text-navy-950',
+      meta: 'text-navy-700',
+      body: 'text-navy-700',
+    },
+    {
+      ...VISION,
+      surface: 'bg-terracota-500 text-navy-950',
+      meta: 'text-navy-800',
+      body: 'text-navy-800',
+    },
+  ]
+
   return (
-    <Section tone="light" spacing="lg" aria-labelledby="mision-vision">
+    <Section tone="paper">
       <Container>
-        <h2 id="mision-vision" className="sr-only">
-          Misión y visión
-        </h2>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {panels.map((panel, position) => (
+            <Reveal key={panel.eyebrow} mask from="bottom" delay={position * 0.12} className="h-full">
+              <div className={`h-full bevel p-8 sm:p-10 lg:p-12 ${panel.surface}`}>
+                <div className="flex items-center gap-4">
+                  <Icon name={panel.icon} className="size-6" />
+                  <span className={`font-mono text-label tabular ${panel.meta}`}>
+                    {formatIndex(index + position)}
+                  </span>
+                  <span className={`font-mono text-label uppercase ${panel.meta}`}>
+                    {panel.eyebrow}
+                  </span>
+                </div>
 
-        <div className="grid gap-px bg-navy-950/15 md:grid-cols-2">
-          {[MISSION, VISION].map((block, index) => (
-            <Reveal
-              key={block.eyebrow}
-              delay={index * 0.1}
-              className="bg-white p-8 md:p-12 lg:p-16"
-            >
-              <div className="flex items-center gap-3">
-                <Icon name={block.icon} className="size-6 text-navy-700" />
-                <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-navy-700">
-                  {block.eyebrow}
-                </h3>
+                <p
+                  className={`mt-8 text-lg leading-relaxed sm:text-xl ${panel.body}`}
+                >
+                  {panel.text}
+                </p>
               </div>
-              <p className="mt-8 text-lg font-medium leading-relaxed text-navy-950 md:text-xl">
-                {block.text}
-              </p>
             </Reveal>
           ))}
         </div>

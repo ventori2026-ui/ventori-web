@@ -1,34 +1,49 @@
+import { Headline } from '@/components/motion/Headline'
 import { Reveal } from '@/components/motion/Reveal'
+import { Rule } from '@/components/motion/Rule'
 import { Container } from '@/components/ui/Container'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { GridPaper } from '@/components/ui/GridPaper'
+import type { HeadlineLine } from '@/types/content'
 
 interface PageHeroProps {
   eyebrow: string
-  title: string
+  lines: readonly HeadlineLine[]
   lead: string
 }
 
-/** Encabezado compartido por todas las páginas internas. */
-export function PageHero({ eyebrow, title, lead }: PageHeroProps) {
+/**
+ * Apertura de las páginas internas.
+ *
+ * Deliberadamente sin fotografía: la única página que abre con imagen es la
+ * home. Si todas lo hicieran, el gesto dejaría de significar nada y cada página
+ * interna cargaría un LCP pesado para mostrar un encabezado.
+ *
+ * El relleno superior reserva la altura del header fijo, que se superpone al
+ * contenido. Sin él, el eyebrow quedaría debajo de la barra.
+ */
+export function PageHero({ eyebrow, lines, lead }: PageHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-navy-950 pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 lg:pt-[calc(var(--header-height-lg)+6rem)]">
-      {/* Halo de acento tras el titular, puramente decorativo. */}
-      <div
-        className="pointer-events-none absolute -right-40 -top-40 size-[32rem] rounded-full bg-terracota-500/10 blur-3xl"
-        aria-hidden="true"
-      />
+    <section className="relative isolate overflow-hidden bg-navy-950 pt-(--header-height) pb-16 sm:pb-20 lg:pt-(--header-height-lg) lg:pb-28">
+      <GridPaper />
 
-      <Container className="relative">
-        <Reveal>
-          <Eyebrow>{eyebrow}</Eyebrow>
+      <Container className="relative pt-16 lg:pt-24">
+        <Reveal trigger="mount">
+          <div className="flex items-center gap-4">
+            <Rule trigger="mount" className="w-10 flex-none text-terracota-500" />
+            <span className="font-mono text-label uppercase text-navy-200">{eyebrow}</span>
+          </div>
         </Reveal>
-        <Reveal delay={0.08}>
-          <h1 className="mt-6 max-w-4xl text-display-sm font-extrabold text-white md:text-display-md lg:text-display-lg">
-            {title}
-          </h1>
-        </Reveal>
-        <Reveal delay={0.16}>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
+
+        <Headline
+          as="h1"
+          lines={lines}
+          delay={0.12}
+          trigger="mount"
+          className="mt-7 max-w-4xl text-display-lg font-semibold text-white"
+        />
+
+        <Reveal trigger="mount" delay={0.35}>
+          <p className="mt-8 max-w-2xl text-base leading-relaxed text-navy-100 sm:text-lg">
             {lead}
           </p>
         </Reveal>

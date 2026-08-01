@@ -2,60 +2,65 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useInView, useReducedMotion } from 'framer-motion'
-import { MOTION, SITE } from '@/lib/constants'
+import { ENTRANCE_VIEWPORT } from '@/components/motion/entrance'
+import { MOTION } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 interface CounterProps {
+  /** Valor final al que llega el conteo. */
   value: number
   prefix?: string
   suffix?: string
   className?: string
 }
 
-/** Curva de desaceleración, para que el conteo no termine de golpe. */
-function easeOut(progress: number) {
-  return 1 - Math.pow(1 - progress, 3)
+/** Curva de desaceleración del conteo, equivalente a `MOTION.ease` en valor. */
+function easeOut(t: number) {
+  return 1 - Math.pow(1 - t, 4)
 }
 
 /**
- * Cuenta de 0 al valor indicado la primera vez que entra en viewport.
+ * Cifra que cuenta hasta su valor al entrar en viewport.
  *
- * El valor final está siempre en el DOM vía `aria-label`, así que el conteo es
- * puramente visual. Con movimiento reducido la duración es 0 y el número
- * aparece directo; el render inicial es idéntico en servidor y cliente, de modo
- * que la preferencia no introduce desajustes de hidratación.
+ * El texto servido ya contiene el valor final: quien no tenga JavaScript, o
+ * llegue con movimiento reducido, lee el dato correcto de inmediato. El conteo
+ * solo se activa después, en el cliente.
+ *
+ * Las cifras van en `tabular` porque un contador con anchos variables
+ * ensancha y estrecha su caja en cada fotograma, y el bloque entero tiembla.
  */
-export function Counter({ value, prefix = '', suffix = '', className }: CounterProps) {
+export function Counter({ value, prefix, suffix, className }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null)
-  const isInView = useInView(ref, { once: true, margin: MOTION.viewportMargin })
+  const inView = useInView(ref, ENTRANCE_VIEWPORT)
   const prefersReducedMotion = useReducedMotion()
-  const [displayed, setDisplayed] = useState(0)
+  const [display, setDisplay] = useState(value)
 
   useEffect(() => {
-    if (!isInView) return
+    if (!inView || prefersReducedMotion) return
 
-    const duration = prefersReducedMotion ? 0 : MOTION.counterDuration
-    const start = performance.now()
     let frame = 0
+    const start = performance.now()
 
     const tick = (now: number) => {
-      const progress = duration === 0 ? 1 : Math.min((now - start) / duration, 1)
-      setDisplayed(Math.round(easeOut(progress) * value))
+      const progress = Math.min((now - start) / MOTION.counterDuration, 1)
+      setDisplay(Math.round(easeOut(progress) * value))
       if (progress < 1) frame = requestAnimationFrame(tick)
     }
 
+    /* No hace falta poner el valor en cero antes de arrancar: el primer
+       fotograma llega con un progreso prácticamente nulo y lo deja ahí solo.
+       Hacerlo aquí sería un `setState` síncrono dentro del efecto, con el
+       render en cascada que eso provoca. */
     frame = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frame)
-  }, [isInView, prefersReducedMotion, value])
 
-  const formatted = new Intl.NumberFormat(SITE.lang).format(displayed)
+    return () => cancelAnimationFrame(frame)
+  }, [inView, prefersReducedMotion, value])
 
   return (
-    <span ref={ref} className={className} aria-label={`${prefix}${value}${suffix}`}>
-      <span aria-hidden="true">
-        {prefix}
-        {formatted}
-        {suffix}
-      </span>
+    <span ref={ref} className={cn('tabular', className)}>
+      {prefix}
+      {display.toLocaleString('es-CO')}
+      {suffix}
     </span>
   )
 }

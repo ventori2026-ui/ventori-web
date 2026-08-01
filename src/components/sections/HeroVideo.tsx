@@ -9,20 +9,23 @@ import { cn } from '@/lib/utils'
 const CLIP_DURATION = 7000
 
 /**
- * Fondo del hero: tres clips que se funden en bucle, como en la referencia.
+ * Fondo del hero: tres sobrevuelos que se funden en bucle.
  *
- * - Los vídeos van silenciados y sin controles: son decorado, no contenido.
- * - `poster` pinta el primer fotograma sin esperar al vídeo, así el LCP no
- *   depende de la descarga del mp4.
+ * Decisiones que importan:
+ *
+ * - Los vídeos van silenciados, sin controles y `aria-hidden`: son ambientación,
+ *   no contenido. Nada de lo que dicen es información que se pierda.
+ * - El `poster` pinta el primer fotograma sin esperar al mp4, así el LCP no
+ *   depende de la descarga del vídeo.
  * - Solo se reproduce el clip visible. Con `autoPlay` en los tres, los tres
- *   quedaban decodificando a la vez y consumían CPU sin que se vieran.
- * - Con `prefers-reduced-motion` no se reproduce nada ni se descarga ningún
- *   mp4: se queda el póster del primer clip como imagen fija.
+ *   decodifican a la vez y consumen CPU sin que se vean.
+ * - Con movimiento reducido no se reproduce nada ni se descarga ningún mp4: se
+ *   queda el póster del primer clip como imagen fija.
  *
  * El markup es idéntico en los dos casos, incluido `preload`. La preferencia
- * solo cambia lo que hacen los efectos: renderizar `<img>` en un caso y
- * `<video>` en el otro rompía la hidratación, porque `useReducedMotion()`
- * devuelve valores distintos en servidor y en cliente.
+ * solo cambia lo que hacen los efectos: renderizar `<img>` en un caso y `<video>`
+ * en el otro rompía la hidratación, porque `useReducedMotion()` devuelve valores
+ * distintos en servidor y en cliente.
  */
 export function HeroVideo() {
   const prefersReducedMotion = useReducedMotion()
@@ -46,16 +49,16 @@ export function HeroVideo() {
       if (!video) return
 
       if (index === active) {
-        // La descarga se pide aquí y no con un atributo, para no alterar el
-        // markup servido: así los usuarios con movimiento reducido nunca
-        // llegan a bajar el mp4.
+        /* La descarga se pide aquí y no con un atributo, para no alterar el
+           markup servido: así quien tiene movimiento reducido nunca llega a
+           bajar el mp4. */
         if (video.preload !== 'auto') {
           video.preload = 'auto'
           video.load()
         }
         video.currentTime = 0
         void video.play().catch(() => {
-          // Si el navegador bloquea la reproducción automática, queda el póster.
+          /* Si el navegador bloquea la reproducción automática, queda el póster. */
         })
       } else {
         video.pause()
@@ -69,7 +72,7 @@ export function HeroVideo() {
         <div
           key={clip.src}
           className={cn(
-            'absolute inset-0 transition-opacity duration-1000 ease-in-out',
+            'absolute inset-0 transition-opacity duration-1000 ease-[var(--ease-in-out-soft)]',
             index === active ? 'opacity-100' : 'opacity-0',
           )}
         >
@@ -88,10 +91,15 @@ export function HeroVideo() {
         </div>
       ))}
 
-      {/* Doble velo: uno general para el contraste del texto y otro desde abajo
-          para que el titular se apoye sobre la zona más oscura. */}
-      <div className="absolute inset-0 bg-navy-950/55" />
-      <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/25 to-navy-950/40" />
+      {/*
+        Tres capas de velo, cada una con un trabajo distinto:
+        el plano general baja la luminancia de toda la fotografía; el degradado
+        inferior asienta el titular sobre la zona más oscura; el lateral abre
+        contraste en el borde izquierdo, que es donde arranca la lectura.
+      */}
+      <div className="absolute inset-0 bg-navy-950/60" />
+      <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/30 to-navy-950/50" />
+      <div className="absolute inset-0 bg-gradient-to-r from-navy-950/80 via-transparent to-transparent" />
     </div>
   )
 }

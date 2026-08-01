@@ -2,85 +2,136 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-/**
- * Variantes de botón. Todas cumplen contraste AA sobre el fondo donde se usan:
- * `primary` va sobre navy, `onTerracota` y `onLight` sobre fondos claros.
- */
-const VARIANTS = {
-  primary: 'bg-terracota-500 text-navy-950 hover:bg-terracota-400',
-  outline: 'border border-white/25 text-white hover:border-terracota-500 hover:bg-white/5',
-  onLight: 'bg-navy-950 text-white hover:bg-navy-800',
-  onTerracota: 'bg-navy-950 text-white hover:bg-navy-800',
-  ghost: 'text-white hover:text-terracota-300',
-} as const
+type ButtonVariant = 'primary' | 'outline' | 'onPaper'
 
-const SIZES = {
-  md: 'h-12 px-6 text-sm',
-  lg: 'h-14 px-8 text-base',
-} as const
-
-const BASE =
-  'group inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-[0.01em] transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-60'
-
-interface ButtonBaseProps {
+interface BaseProps {
   children: React.ReactNode
-  variant?: keyof typeof VARIANTS
-  size?: keyof typeof SIZES
+  variant?: ButtonVariant
   className?: string
-  /** Muestra una flecha que se desplaza en hover. */
+  /** Oculta la flecha en acciones que no llevan a otro sitio (enviar, cerrar). */
   withArrow?: boolean
 }
 
-function Inner({ children, withArrow }: Pick<ButtonBaseProps, 'children' | 'withArrow'>) {
-  return (
-    <>
-      {children}
-      {withArrow ? (
-        <ArrowRight
-          className="size-4 transition-transform duration-300 group-hover:translate-x-1"
-          strokeWidth={2}
-          aria-hidden="true"
-        />
-      ) : null}
-    </>
+type ButtonProps = BaseProps &
+  (
+    | ({ href: string } & Omit<React.ComponentProps<typeof Link>, 'href' | 'className'>)
+    | ({ href?: undefined } & Omit<React.ComponentProps<'button'>, 'className'>)
   )
-}
 
-interface ButtonLinkProps extends ButtonBaseProps {
-  href: string
-}
+/*
+ * El relleno de hover barre desde la izquierda con `scaleX`, que se resuelve en
+ * la capa de composición. Animar el color de fondo obligaría a repintar el botón
+ * entero en cada fotograma.
+ */
+const SWEEP = {
+  primary: 'bg-navy-950',
+  outline: 'bg-white',
+  onPaper: 'bg-terracota-500',
+} as const satisfies Record<ButtonVariant, string>
 
-export function ButtonLink({
-  href,
-  children,
-  variant = 'primary',
-  size = 'md',
-  className,
-  withArrow = false,
-}: ButtonLinkProps) {
-  return (
-    <Link href={href} className={cn(BASE, VARIANTS[variant], SIZES[size], className)}>
-      <Inner withArrow={withArrow}>{children}</Inner>
-    </Link>
-  )
-}
+const SURFACE = {
+  primary: 'bg-terracota-500 text-navy-950',
+  /* Sin fondo: la variante se apoya en el anillo y deja ver la fotografía. */
+  outline: 'text-white',
+  onPaper: 'bg-navy-950 text-white',
+} as const satisfies Record<ButtonVariant, string>
 
-interface ButtonProps
-  extends
-    ButtonBaseProps,
-    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> {}
+/* Color del texto una vez el barrido ha cubierto el botón. */
+const SURFACE_HOVER = {
+  primary: 'group-hover:text-white group-focus-visible:text-white',
+  outline: 'group-hover:text-navy-950 group-focus-visible:text-navy-950',
+  onPaper: 'group-hover:text-navy-950 group-focus-visible:text-navy-950',
+} as const satisfies Record<ButtonVariant, string>
 
+/**
+ * Acción principal del sitio.
+ *
+ * Lleva el bisel de marca en las mismas dos esquinas que el resto de piezas.
+ * `clip-path` recorta cualquier borde en las diagonales, así que la variante
+ * `outline` dibuja su contorno con `.bevel-ring`: un anillo por máscara que
+ * sigue el corte y deja el interior transparente, necesario porque este botón
+ * vive sobre la fotografía del hero.
+ *
+ * Alto mínimo de 48 px en todas las variantes, incluido el móvil, para cumplir
+ * el área táctil de Material y HIG.
+ */
 export function Button({
   children,
   variant = 'primary',
-  size = 'md',
   className,
-  withArrow = false,
+  withArrow = true,
   ...props
 }: ButtonProps) {
+  const outline = variant === 'outline'
+
+  const content = (
+    <>
+      {/* Barrido de hover. Decorativo: no aporta significado por sí solo. */}
+      <span
+        aria-hidden="true"
+        className={cn(
+          'absolute inset-0 origin-left scale-x-0 transition-transform duration-300 ease-[var(--ease-out-soft)]',
+          'group-hover:scale-x-100 group-focus-visible:scale-x-100',
+          SWEEP[variant],
+        )}
+      />
+
+      {outline && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bevel-sm bevel-ring text-white/40 transition-colors duration-300 group-hover:text-white group-focus-visible:text-white"
+        />
+      )}
+
+      <span
+        className={cn(
+          'relative flex items-center gap-3 transition-colors duration-300',
+          SURFACE_HOVER[variant],
+        )}
+      >
+        {children}
+        {withArrow && (
+          <ArrowRight
+            aria-hidden="true"
+            strokeWidth={1.5}
+            className="size-4 transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover:translate-x-1 group-focus-visible:translate-x-1"
+          />
+        )}
+      </span>
+    </>
+  )
+
+  const shared = cn(
+    'group relative inline-flex min-h-12 cursor-pointer items-center justify-center overflow-hidden',
+    'bevel-sm px-7 py-3.5 font-mono text-label uppercase',
+    'disabled:pointer-events-none disabled:opacity-50',
+    SURFACE[variant],
+    className,
+  )
+
+  /*
+   * Se desestructura una sola vez y se reparte según haya destino o no. El tipo
+   * público de arriba ya obliga a que los atributos correspondan al elemento que
+   * se va a renderizar; aquí dentro la unión se ha perdido, y la aserción evita
+   * duplicar toda la firma por rama.
+   */
+  const { href, ...rest } = props
+
+  if (href !== undefined) {
+    return (
+      <Link
+        href={href}
+        className={shared}
+        {...(rest as Omit<React.ComponentProps<typeof Link>, 'href' | 'className'>)}
+      >
+        {content}
+      </Link>
+    )
+  }
+
   return (
-    <button className={cn(BASE, VARIANTS[variant], SIZES[size], className)} {...props}>
-      <Inner withArrow={withArrow}>{children}</Inner>
+    <button className={shared} {...(rest as Omit<React.ComponentProps<'button'>, 'className'>)}>
+      {content}
     </button>
   )
 }

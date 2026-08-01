@@ -1,70 +1,73 @@
 import { Reveal } from '@/components/motion/Reveal'
-import { Stagger, StaggerItem } from '@/components/motion/Stagger'
 import { Container } from '@/components/ui/Container'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Icon } from '@/components/ui/Icon'
+import { MediaFrame } from '@/components/ui/MediaFrame'
 import { Section } from '@/components/ui/Section'
 import { SECTORS } from '@/content/sectors'
-
-interface SectorsGridProps {
-  /** En /sectores el encabezado ya lo pone `<PageHero />`. */
-  withHeading?: boolean
-}
+import { cn, formatIndex } from '@/lib/utils'
 
 /**
- * Corte claro del sitio. Sobre blanco los acentos van en navy: la terracota como
- * texto no alcanza contraste AA (ver AGENTS.md).
+ * Detalle de los siete sectores, alternando el lado de la fotografía.
+ *
+ * La alternancia no es adorno: siete bloques idénticos apilados se leen como
+ * una lista y el usuario deja de mirarlos hacia el tercero. Cambiar el lado
+ * obliga a la vista a recolocarse en cada uno.
+ *
+ * Cada bloque lleva `id` porque el mosaico de la home enlaza a `#sector`.
  */
-export function SectorsGrid({ withHeading = true }: SectorsGridProps) {
+export function SectorsGrid() {
   return (
-    <Section tone="light" spacing="lg" aria-labelledby={withHeading ? 'sectores' : undefined}>
+    <Section tone="navy" grid>
       <Container>
-        {withHeading ? (
-          <div className="max-w-2xl">
-            <Reveal>
-              <Eyebrow tone="onLight">Sectores</Eyebrow>
-            </Reveal>
-            <Reveal delay={0.08}>
-              <h2
-                id="sectores"
-                className="mt-6 text-display-sm font-extrabold text-navy-950 md:text-display-md"
-              >
-                Dónde trabajamos
-              </h2>
-            </Reveal>
-            <Reveal delay={0.16}>
-              <p className="mt-6 text-base leading-relaxed text-navy-950/70 md:text-lg">
-                Atendemos proyectos de infraestructura y equipamiento en el sector público y
-                privado, con el rigor documental y técnico que exige cada uno.
-              </p>
-            </Reveal>
-          </div>
-        ) : null}
+        <div className="space-y-20 lg:space-y-32">
+          {SECTORS.map((sector, position) => {
+            /* Impares con la fotografía a la izquierda en escritorio. */
+            const flipped = position % 2 === 1
 
-        <Stagger
-          as="ul"
-          className={`grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 ${withHeading ? 'mt-16' : ''}`}
-        >
-          {SECTORS.map((sector, index) => (
-            <StaggerItem
-              as="li"
-              key={sector.id}
-              id={sector.id}
-              className="group scroll-mt-32 border-t border-navy-950/15 py-8 transition-colors duration-300 hover:border-navy-950"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <Icon name={sector.icon} className="size-7 text-navy-700" />
-                <span className="font-display text-sm font-semibold tabular-nums text-navy-950/40">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-              </div>
-              <h3 className="mt-5 text-xl font-bold tracking-tight text-navy-950">
-                {sector.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-navy-950/70">{sector.description}</p>
-            </StaggerItem>
-          ))}
-        </Stagger>
+            return (
+              <article
+                key={sector.id}
+                id={sector.id}
+                className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20"
+              >
+                <Reveal
+                  mask
+                  from="bottom"
+                  className={cn(flipped ? 'lg:order-2' : 'lg:order-1')}
+                >
+                  <MediaFrame
+                    media={sector.media}
+                    ratio="landscape"
+                    sizes="(min-width: 1024px) 45vw, 100vw"
+                  />
+                </Reveal>
+
+                <div className={cn(flipped ? 'lg:order-1' : 'lg:order-2')}>
+                  <Reveal>
+                    <div className="flex items-center gap-4">
+                      <span className="font-mono text-label tabular text-terracota-500">
+                        {formatIndex(position)}
+                      </span>
+                      <Icon name={sector.icon} className="size-6 text-navy-300" />
+                    </div>
+                  </Reveal>
+
+                  <Reveal delay={0.1}>
+                    <h2 className="mt-6 stretch-display text-display-sm font-semibold text-white">
+                      {sector.title}
+                    </h2>
+                  </Reveal>
+
+                  <Reveal delay={0.18}>
+                    <p className="mt-5 max-w-xl text-base leading-relaxed text-navy-100 sm:text-lg">
+                      {sector.description}
+                    </p>
+                  </Reveal>
+                </div>
+              </article>
+            )
+          })}
+        </div>
       </Container>
     </Section>
   )

@@ -61,7 +61,13 @@ interface IconProps {
   className?: string
 }
 
-/** Los iconos son decorativos: el significado siempre está en el texto adyacente. */
+/**
+ * Los iconos son decorativos: el significado siempre está en el texto adyacente,
+ * por eso van `aria-hidden` y nunca aparecen solos.
+ *
+ * Trazo de 1.5 en toda la familia. Mezclar grosores es lo que hace que un set de
+ * iconos se vea ensamblado a mano en vez de diseñado.
+ */
 export function Icon({ name, className }: IconProps) {
   const Component = REGISTRY[name]
   return <Component className={className} strokeWidth={1.5} aria-hidden="true" />

@@ -1,10 +1,102 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
 
+/* ────────────────────────────────────────────────────────────────────────
+   Utilidades de marca
+   ──────────────────────────────────────────────────────────────────────── */
+
+/*
+ * El bisel: corta la esquina superior derecha y la inferior izquierda, igual
+ * que las vigas del isotipo. Es la firma visual del sitio y se aplica a marcos
+ * de imagen, tarjetas y botones.
+ *
+ * Un elemento recortado con clip-path pierde su borde en las diagonales. Donde
+ * hace falta contorno se usa `.bevel-outline`, que lo resuelve con dos capas.
+ */
+@utility bevel {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--bevel)) 0,
+    100% var(--bevel),
+    100% 100%,
+    var(--bevel) 100%,
+    0 calc(100% - var(--bevel))
+  );
+}
+
+@utility bevel-sm {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--bevel-sm)) 0,
+    100% var(--bevel-sm),
+    100% 100%,
+    var(--bevel-sm) 100%,
+    0 calc(100% - var(--bevel-sm))
+  );
+}
+
+/*
+ * Contorno de 1 px que sigue la diagonal del bisel y deja el interior
+ * realmente transparente.
+ *
+ * `border` no sirve: `clip-path` recorta el borde justo en las esquinas
+ * cortadas. Superponer dos capas —una del color del trazo y otra del color de
+ * fondo— tampoco, porque sobre fotografía no hay un color de fondo que replicar,
+ * y el botón acaba viéndose relleno.
+ *
+ * La solución es pintar el elemento entero del color del trazo y restarle su
+ * propia caja de contenido con `mask-composite`: queda solo el anillo de 1 px
+ * que define el `padding`, y el hueco central deja ver lo que haya debajo.
+ */
+@utility bevel-ring {
+  background-color: currentColor;
+  padding: 1px;
+  -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  -webkit-mask-clip: content-box, border-box;
+  -webkit-mask-composite: xor;
+  mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+}
+
+/*
+ * Retícula técnica de fondo, como papel de plano. Se aplica sobre un elemento
+ * decorativo aparte (`aria-hidden`) y hereda el color con `currentColor`, de
+ * modo que la misma utilidad sirve sobre navy y sobre papel.
+ */
+@utility grid-tech {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      currentColor 0,
+      currentColor 1px,
+      transparent 1px,
+      transparent var(--grid-step)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      currentColor 0,
+      currentColor 1px,
+      transparent 1px,
+      transparent var(--grid-step)
+    );
+}
+
+/* Cifras de ancho fijo: contadores, años y datos tabulados no deben bailar. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Archivo lleva eje de anchura. El display va expandido; el cuerpo, normal. */
+@utility stretch-display {
+  font-stretch: 112%;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* El header fijo no debe tapar el destino de las anclas de /servicios y /sectores */
+    /* El header fijo no debe tapar el destino de las anclas */
     scroll-padding-top: var(--header-height-lg);
   }
 
@@ -13,6 +105,7 @@
     color: #ffffff;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
@@ -27,38 +120,37 @@
     text-wrap: pretty;
   }
 
-  /*
-    El canvas que inyecta @paper-design/shaders no hereda el tamaño de su
-    contenedor. Se ajusta aquí en vez de inyectar un <style> global desde el
-    componente, como hacía la implementación original.
-  */
-  [data-liquid-metal] canvas {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
   ::selection {
     background-color: var(--color-terracota-500);
     color: var(--color-navy-950);
   }
 
+  /*
+   * Radio 0 también en el foco: la marca no tiene curvas. El desplazamiento
+   * separa el anillo del elemento para que se lea sobre cualquier superficie.
+   */
   :focus-visible {
     outline: 2px solid var(--color-terracota-500);
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 0;
   }
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+   Movimiento reducido
+   ──────────────────────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  /* La barra de progreso es movimiento continuo: se retira por completo. */
-  [data-scroll-progress] {
+  /*
+   * Movimiento continuo y sin carga informativa: se retira por completo en vez
+   * de acelerarse, porque acelerar un bucle infinito no lo hace menos molesto.
+   */
+  [data-scroll-progress],
+  [data-marquee] {
     display: none;
   }
 

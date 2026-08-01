@@ -131,50 +131,53 @@ export const FORM_MESSAGES = {
 } as const
 
 /**
- * Ajustes del aro de metal líquido de los CTA primarios.
+ * Parámetros del sistema de movimiento. Las primitivas de `components/motion/`
+ * son las únicas que los consumen; ninguna sección anima por su cuenta.
  *
- * `colorTint` es la terracota de marca y `colorBack` el navy, de modo que el
- * efecto se mantiene dentro de la identidad en vez del gris del componente
- * original. Los valores van en RGBA normalizado (0–1), que es lo que espera el
- * shader.
+ * Un único juego de curvas y duraciones para todo el sitio: es lo que hace que
+ * secciones distintas se sientan parte del mismo objeto en vez de una colección
+ * de efectos sueltos.
  */
-export const LIQUID_METAL = {
-  speed: {
-    idle: 0.5,
-    hover: 1.2,
-  },
-  uniforms: {
-    // #d88b64
-    u_colorTint: [0.847, 0.545, 0.392, 1] as [number, number, number, number],
-    // #010133
-    u_colorBack: [0.004, 0.004, 0.2, 1] as [number, number, number, number],
-    /*
-     * Pocas repeticiones y transiciones muy suaves: sobre un aro de 4 px, más
-     * bandas producen astillas de luz duras que se leen como un fallo de
-     * render en vez de como metal.
-     */
-    u_repetition: 2,
-    u_softness: 0.85,
-    u_shiftRed: 0.3,
-    u_shiftBlue: 0.3,
-    u_distortion: 0.25,
-    u_contour: 0,
-    u_angle: 45,
-    u_scale: 6,
-    u_shape: 1,
-    u_offsetX: 0.1,
-    u_offsetY: -0.1,
-    u_isImage: false,
-  },
-} as const
-
-/** Parámetros de la animación de entrada. Las primitivas de motion los consumen. */
 export const MOTION = {
-  distance: 24,
-  duration: 0.7,
-  stagger: 0.08,
-  ease: [0.22, 1, 0.36, 1],
-  /** Dispara el reveal un poco antes de que el elemento toque el borde inferior. */
-  viewportMargin: '0px 0px -12% 0px',
-  counterDuration: 1800,
+  /** Curva de entrada. Salida rápida al principio y asentamiento largo. */
+  ease: [0.16, 1, 0.3, 1],
+  /** Curva simétrica, para lo que va y vuelve (menús, crossfades). */
+  easeInOut: [0.65, 0, 0.35, 1],
+
+  duration: {
+    /** Micro-interacciones: hover, press, cambios de estado. */
+    fast: 0.2,
+    /** Entradas estándar de bloque. */
+    base: 0.65,
+    /** Revelados de titular, que necesitan aire para leerse como intención. */
+    slow: 0.9,
+  },
+
+  /**
+   * Las salidas duran ~65 % de la entrada: una interfaz que se va despacio se
+   * siente lenta, aunque entre rápido.
+   */
+  exitRatio: 0.65,
+
+  /** Desplazamiento de entrada, en píxeles. */
+  distance: 28,
+
+  /** Retardo entre hermanos de una lista o retícula. */
+  stagger: 0.07,
+  /** Retardo entre líneas de un titular enmascarado. */
+  staggerLines: 0.08,
+
+
+  /** Duración del conteo de cifras, en milisegundos. */
+  counterDuration: 1900,
+
+  /**
+   * Muelle del cursor y de los elementos que siguen al scroll. Amortiguado
+   * alto y rigidez baja: acompaña sin rebotar, que en una marca de ingeniería
+   * lee como imprecisión.
+   */
+  spring: { stiffness: 90, damping: 26, mass: 0.6 },
+
+  /** Recorrido del parallax de una imagen, en porcentaje de su alto. */
+  parallax: 12,
 } as const

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { CtaBand } from '@/components/sections/CtaBand'
-import { SectorsGrid } from '@/components/sections/SectorsGrid'
 import { ServicesDetail } from '@/components/sections/ServicesDetail'
 import { PageHero } from '@/components/ui/PageHero'
 import { PAGES } from '@/content/pages'
@@ -18,12 +17,11 @@ export default function ServicesPage() {
     <>
       <PageHero
         eyebrow={PAGES.services.eyebrow}
-        title={PAGES.services.title}
+        lines={PAGES.services.titleLines}
         lead={PAGES.services.lead}
       />
       <ServicesDetail />
-      <SectorsGrid />
-      <CtaBand />
+      <CtaBand index={0} />
     </>
   )
 }

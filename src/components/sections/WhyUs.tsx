@@ -1,39 +1,52 @@
-import { Reveal } from '@/components/motion/Reveal'
 import { Stagger, StaggerItem } from '@/components/motion/Stagger'
 import { Container } from '@/components/ui/Container'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Icon } from '@/components/ui/Icon'
 import { Section } from '@/components/ui/Section'
+import { SectionHead } from '@/components/ui/SectionHead'
 import { DIFFERENTIATORS } from '@/content/differentiators'
+import { HOME_SECTIONS } from '@/content/sections'
+import { formatIndex } from '@/lib/utils'
 
-export function WhyUs() {
+/**
+ * "Por qué elegirnos", sobre el bloque de terracota.
+ *
+ * Es el único bloque a color pleno de la página y por eso va aquí: rompe la
+ * alternancia navy/papel justo antes del cierre y funciona como acento, no como
+ * fondo. Terracota con texto navy da 7.4:1 — es la única forma de usar el color
+ * de marca a tamaño de texto sin incumplir AA (ver AGENTS.md).
+ *
+ * Siete puntos en tres columnas dejan una fila incompleta a propósito: el hueco
+ * final airea el bloque y evita el efecto de tabla cerrada.
+ */
+export function WhyUs({ index }: { index: number }) {
+  const copy = HOME_SECTIONS.whyUs
+
   return (
-    <Section spacing="lg" aria-labelledby="por-que-elegirnos">
+    <Section tone="terracota" grid>
       <Container>
-        <div className="max-w-2xl">
-          <Reveal>
-            <Eyebrow>Por qué elegirnos</Eyebrow>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <h2
-              id="por-que-elegirnos"
-              className="mt-6 text-display-sm font-extrabold text-white md:text-display-md"
-            >
-              Siete razones que se verifican en obra
-            </h2>
-          </Reveal>
-        </div>
+        <SectionHead
+          index={index}
+          eyebrow={copy.eyebrow}
+          lines={copy.lines}
+          intro={copy.intro}
+          tone="accent"
+        />
 
-        <Stagger as="ul" className="mt-16 grid gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
-          {DIFFERENTIATORS.map((item) => (
-            <StaggerItem as="li" key={item.id} className="flex gap-5 border-t border-white/15 py-7">
-              <Icon name={item.icon} className="mt-1 size-6 shrink-0 text-terracota-400" />
-              <div>
-                <h3 className="text-base font-bold leading-snug tracking-tight text-white">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/65">{item.description}</p>
+        <Stagger as="ul" className="mt-16 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {DIFFERENTIATORS.map((item, position) => (
+            <StaggerItem as="li" key={item.id}>
+              <div className="flex items-center gap-3">
+                <Icon name={item.icon} className="size-6 text-navy-950" />
+                <span className="font-mono text-label tabular text-navy-800">
+                  {formatIndex(position)}
+                </span>
               </div>
+
+              <h3 className="mt-5 stretch-display text-lg font-semibold leading-snug tracking-tight text-navy-950">
+                {item.title}
+              </h3>
+
+              <p className="mt-3 text-sm leading-relaxed text-navy-800">{item.description}</p>
             </StaggerItem>
           ))}
         </Stagger>

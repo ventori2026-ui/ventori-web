@@ -1,67 +1,80 @@
 import { Check } from 'lucide-react'
 import { Reveal } from '@/components/motion/Reveal'
+import { Rule } from '@/components/motion/Rule'
+import { Stagger, StaggerItem } from '@/components/motion/Stagger'
 import { Container } from '@/components/ui/Container'
 import { Icon } from '@/components/ui/Icon'
 import { Section } from '@/components/ui/Section'
 import { SERVICES } from '@/content/services'
+import { formatIndex } from '@/lib/utils'
 
 /**
- * Detalle de los nueve servicios. Cada bloque tiene ancla propia (`#${id}`), que
- * es a donde apuntan las tarjetas de la home y los enlaces del footer.
+ * Detalle de los nueve servicios, uno por bloque.
+ *
+ * Cada bloque lleva `id` porque el índice de la home y el pie enlazan a
+ * `#servicio`. El `scroll-padding-top` de `globals.css` compensa el header fijo
+ * para que el título no quede oculto bajo la barra al saltar al ancla.
+ *
+ * La retícula alterna: en escritorio el número y el icono quedan en una columna
+ * estrecha a la izquierda y el contenido en las ocho restantes. Es la
+ * disposición de una ficha técnica, y sostiene bien títulos largos sin
+ * recortarlos.
  */
 export function ServicesDetail() {
   return (
-    <Section spacing="none" className="py-8 md:py-12" aria-labelledby="detalle-servicios">
+    <Section tone="navy" grid>
       <Container>
-        <h2 id="detalle-servicios" className="sr-only">
-          Detalle de servicios
-        </h2>
+        <div className="border-t border-navy-800">
+          {SERVICES.map((service, position) => (
+            <article
+              key={service.id}
+              id={service.id}
+              className="grid gap-6 border-b border-navy-800 py-14 lg:grid-cols-12 lg:gap-10 lg:py-20"
+            >
+              <div className="lg:col-span-3">
+                <Reveal>
+                  <div className="flex items-center gap-4">
+                    <span className="font-mono text-label tabular text-terracota-500">
+                      {formatIndex(position)}
+                    </span>
+                    <Rule className="w-8 flex-none text-navy-600" delay={0.1} />
+                  </div>
 
-        <div className="divide-y divide-white/12">
-          {SERVICES.map((service, index) => (
-            <article key={service.id} id={service.id} className="scroll-mt-32 py-14 md:py-20">
-              <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-                <div className="lg:col-span-5">
-                  <Reveal>
-                    <div className="flex items-center gap-4">
-                      <Icon name={service.icon} className="size-8 text-terracota-400" />
-                      <span className="font-display text-sm font-semibold tabular-nums text-white/40">
-                        {String(index + 1).padStart(2, '0')} /{' '}
-                        {String(SERVICES.length).padStart(2, '0')}
-                      </span>
-                    </div>
-                  </Reveal>
-                  <Reveal delay={0.08}>
-                    <h3 className="mt-6 text-2xl font-extrabold leading-tight tracking-tight text-white md:text-3xl">
-                      {service.title}
-                    </h3>
-                  </Reveal>
-                </div>
+                  <Icon name={service.icon} className="mt-7 size-9 text-terracota-500" />
+                </Reveal>
+              </div>
 
-                <div className="lg:col-span-6 lg:col-start-7">
-                  <Reveal delay={0.12}>
-                    <p className="text-base leading-relaxed text-white/75 md:text-lg">
-                      {service.description}
-                    </p>
-                  </Reveal>
-                  <Reveal delay={0.2}>
-                    <h4 className="mt-9 text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
-                      Entregables
-                    </h4>
-                    <ul className="mt-5 space-y-3">
-                      {service.deliverables.map((deliverable) => (
-                        <li key={deliverable} className="flex gap-3 text-sm text-white/70">
-                          <Check
-                            className="mt-0.5 size-4 shrink-0 text-terracota-400"
-                            strokeWidth={2}
-                            aria-hidden="true"
-                          />
-                          <span>{deliverable}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </Reveal>
-                </div>
+              <div className="lg:col-span-9">
+                <Reveal delay={0.08}>
+                  <h2 className="stretch-display text-display-sm font-semibold text-white">
+                    {service.title}
+                  </h2>
+                </Reveal>
+
+                <Reveal delay={0.16}>
+                  <p className="mt-6 max-w-3xl text-base leading-relaxed text-navy-100 sm:text-lg">
+                    {service.description}
+                  </p>
+                </Reveal>
+
+                <Reveal delay={0.24}>
+                  <h3 className="mt-10 font-mono text-label uppercase text-navy-200">
+                    Qué entregamos
+                  </h3>
+                </Reveal>
+
+                <Stagger as="ul" className="mt-5 grid gap-3 sm:grid-cols-2" delay={0.28}>
+                  {service.deliverables.map((deliverable) => (
+                    <StaggerItem as="li" key={deliverable} className="flex items-start gap-3">
+                      <Check
+                        aria-hidden="true"
+                        strokeWidth={1.5}
+                        className="mt-0.5 size-4 shrink-0 text-terracota-500"
+                      />
+                      <span className="text-sm leading-relaxed text-navy-100">{deliverable}</span>
+                    </StaggerItem>
+                  ))}
+                </Stagger>
               </div>
             </article>
           ))}

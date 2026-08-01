@@ -1,44 +1,42 @@
 import Image from 'next/image'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger, StaggerItem } from '@/components/motion/Stagger'
-import { BrandGlyph } from '@/components/ui/BrandGlyph'
-import { LiquidMetalButtonLink } from '@/components/ui/LiquidMetalButton'
+import { Button } from '@/components/ui/Button'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import { PAGES } from '@/content/pages'
-import { PROJECTS } from '@/content/projects'
-import { SECTORS } from '@/content/sectors'
+import { HAS_PROJECTS, PROJECTS } from '@/content/projects'
 import { ROUTES } from '@/lib/constants'
-
-function sectorTitle(sectorId: string) {
-  return SECTORS.find((sector) => sector.id === sectorId)?.title ?? ''
-}
+import { formatIndex } from '@/lib/utils'
 
 /**
- * Grilla de proyectos. Mientras `PROJECTS` esté vacío muestra un estado
- * explícito en vez de una página en blanco; al cargar los casos en
- * `content/projects.ts` la sección cambia sola, sin tocar este componente.
+ * Portafolio de proyectos.
+ *
+ * `PROJECTS` está vacío a la espera del cliente y esta sección resuelve los dos
+ * escenarios sin que haya que tocarla después: mientras no haya casos muestra un
+ * estado vacío honesto —explica que la sección se está preparando y ofrece el
+ * contacto—, y en cuanto se llene el arreglo pasa sola a la retícula.
+ *
+ * Un estado vacío que finge no existir, o una retícula con proyectos inventados,
+ * es lo que hace que un sitio corporativo pierda credibilidad en la primera
+ * reunión con el cliente final.
  */
 export function ProjectsGrid() {
-  if (PROJECTS.length === 0) {
+  if (!HAS_PROJECTS) {
     return (
-      <Section spacing="lg" className="overflow-hidden" aria-labelledby="proyectos-vacio">
-        <BrandGlyph className="pointer-events-none absolute -right-20 top-0 h-[26rem] text-terracota-500/[0.06]" />
-        <Container className="relative">
+      <Section tone="navy" grid>
+        <Container width="prose">
           <Reveal>
-            <div className="max-w-2xl border-l-2 border-terracota-500 py-2 pl-8">
-              <h2
-                id="proyectos-vacio"
-                className="text-2xl font-extrabold tracking-tight text-white md:text-3xl"
-              >
+            <div className="bevel border-navy-800 bg-navy-900 p-10 text-center sm:p-14">
+              <h2 className="stretch-display text-display-sm font-semibold text-white">
                 {PAGES.projects.empty.title}
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-white/70">
+              <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-navy-100">
                 {PAGES.projects.empty.text}
               </p>
-              <LiquidMetalButtonLink href={ROUTES.contact} className="mt-8" withArrow>
-                Escríbenos
-              </LiquidMetalButtonLink>
+              <div className="mt-10 flex justify-center">
+                <Button href={ROUTES.contact}>Escríbenos</Button>
+              </div>
             </div>
           </Reveal>
         </Container>
@@ -47,45 +45,50 @@ export function ProjectsGrid() {
   }
 
   return (
-    <Section spacing="lg" aria-labelledby="listado-proyectos">
-      <Container>
-        <h2 id="listado-proyectos" className="sr-only">
-          Listado de proyectos
-        </h2>
+    <Section tone="navy" grid>
+      <Container width="wide">
+        <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {PROJECTS.map((project, position) => (
+            <StaggerItem key={project.id}>
+              <article className="group h-full">
+                <div className="relative aspect-4/3 overflow-hidden bevel">
+                  <Image
+                    src={project.image}
+                    alt={`${project.title}. ${project.scope}.`}
+                    fill
+                    sizes="(min-width: 1024px) 31vw, (min-width: 640px) 47vw, 100vw"
+                    className="object-cover transition-transform duration-700 ease-[var(--ease-out-soft)] group-hover:scale-105"
+                  />
+                </div>
 
-        <Stagger as="ul" className="grid gap-10 md:grid-cols-2 lg:gap-12">
-          {PROJECTS.map((project) => (
-            <StaggerItem as="li" key={project.id} className="group">
-              <div className="relative aspect-4/3 overflow-hidden bg-navy-900">
-                <Image
-                  src={project.image}
-                  alt={`${project.title} — ${project.location}`}
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
-              <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-terracota-400">
-                {sectorTitle(project.sectorId)}
-              </p>
-              <h3 className="mt-3 text-xl font-bold leading-snug tracking-tight text-white md:text-2xl">
-                {project.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-white/70">{project.scope}</p>
-              <dl className="mt-5 flex flex-wrap gap-x-8 gap-y-2 border-t border-white/15 pt-5 text-sm">
-                <div>
-                  <dt className="text-white/45">Cliente</dt>
-                  <dd className="mt-1 text-white/85">{project.client}</dd>
+                <div className="mt-6 flex items-center gap-4">
+                  <span className="font-mono text-label tabular text-terracota-500">
+                    {formatIndex(position)}
+                  </span>
+                  <span className="font-mono text-label tabular uppercase text-navy-200">
+                    {project.year}
+                  </span>
                 </div>
-                <div>
-                  <dt className="text-white/45">Ubicación</dt>
-                  <dd className="mt-1 text-white/85">{project.location}</dd>
-                </div>
-                <div>
-                  <dt className="text-white/45">Año</dt>
-                  <dd className="mt-1 text-white/85">{project.year}</dd>
-                </div>
-              </dl>
+
+                <h2 className="mt-4 stretch-display text-xl font-semibold leading-snug tracking-tight text-white">
+                  {project.title}
+                </h2>
+
+                <dl className="mt-4 space-y-1.5 text-sm text-navy-200">
+                  <div className="flex gap-2">
+                    <dt className="sr-only">Cliente</dt>
+                    <dd>{project.client}</dd>
+                  </div>
+                  <div className="flex gap-2">
+                    <dt className="sr-only">Ubicación</dt>
+                    <dd>{project.location}</dd>
+                  </div>
+                  <div className="flex gap-2">
+                    <dt className="sr-only">Alcance</dt>
+                    <dd className="text-navy-100">{project.scope}</dd>
+                  </div>
+                </dl>
+              </article>
             </StaggerItem>
           ))}
         </Stagger>

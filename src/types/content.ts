@@ -1,5 +1,14 @@
 import type { MediaKey } from '@/content/media'
 
+/**
+ * Una línea de titular. El corte de línea es una decisión editorial declarada en
+ * `content/`, no el resultado del ancho disponible: `<Headline>` revela línea a
+ * línea y necesita saber dónde parte cada una.
+ *
+ * La forma de objeto marca la línea que va en terracota, siempre sobre navy.
+ */
+export type HeadlineLine = string | { text: string; accent?: boolean }
+
 /** Nombres de icono admitidos. Se resuelven a componentes en `components/ui/Icon.tsx`. */
 export type IconName =
   | 'ClipboardCheck'

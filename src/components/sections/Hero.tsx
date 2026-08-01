@@ -1,49 +1,70 @@
-import { Reveal } from '@/components/motion/Reveal'
 import { HeroVideo } from '@/components/sections/HeroVideo'
-import { ButtonLink } from '@/components/ui/Button'
-import { LiquidMetalButtonLink } from '@/components/ui/LiquidMetalButton'
+import { Headline } from '@/components/motion/Headline'
+import { Reveal } from '@/components/motion/Reveal'
+import { Rule } from '@/components/motion/Rule'
+import { Button } from '@/components/ui/Button'
 import { Container } from '@/components/ui/Container'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { HERO } from '@/content/about'
 import { ROUTES } from '@/lib/constants'
+import { formatIndex } from '@/lib/utils'
 
 /**
- * Hero a pantalla completa sobre carrusel de vídeo, siguiendo el ritmo de la
- * referencia: el contenido se apoya en el tercio inferior, no centrado.
+ * Apertura de la home.
+ *
+ * `min-h-dvh` y no `100vh`: en móvil, la barra de direcciones hace que `vh`
+ * mida más que la ventana real y el hero queda cortado por abajo.
+ *
+ * El contenido se ancla abajo a la izquierda, no centrado. Es lo que deja
+ * respirar la fotografía en la mitad superior y lo que hace que el titular
+ * caiga sobre la zona más oscura del velo, donde el contraste es máximo.
+ *
+ * La secuencia de entrada está cronometrada para leerse en orden: disciplinas,
+ * titular línea a línea, bajada, acciones. Nada entra a la vez que otra cosa.
  */
 export function Hero() {
   return (
-    <section className="relative flex h-screen max-h-[1000px] min-h-[640px] items-end overflow-hidden">
+    <section className="relative isolate flex min-h-dvh flex-col justify-end overflow-hidden pt-(--header-height) pb-16 sm:pb-20 lg:pt-(--header-height-lg) lg:pb-24">
       <HeroVideo />
 
-      <Container className="relative pb-20 md:pb-28 lg:pb-32">
-        <div className="max-w-4xl">
-          <Reveal>
-            <Eyebrow>{HERO.eyebrow}</Eyebrow>
-          </Reveal>
+      <Container width="wide" className="relative">
+        <Reveal trigger="mount">
+          <ul className="flex flex-wrap items-center gap-x-7 gap-y-2">
+            {HERO.disciplines.map((discipline, index) => (
+              <li key={discipline} className="flex items-baseline gap-2">
+                <span className="font-mono text-label tabular text-terracota-500">
+                  {formatIndex(index)}
+                </span>
+                <span className="font-mono text-label uppercase text-navy-100">{discipline}</span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
 
-          <Reveal delay={0.08}>
-            <h1 className="mt-7 text-display-sm font-extrabold text-white md:text-display-lg lg:text-display-xl">
-              {HERO.headline}
-              <br />
-              <span className="text-terracota-400">{HERO.headlineAccent}</span>
-            </h1>
-          </Reveal>
+        <Reveal trigger="mount" delay={0.08}>
+          <Rule trigger="mount" className="mt-6 max-w-md text-navy-600" />
+        </Reveal>
 
-          <Reveal delay={0.16}>
-            <p className="mt-7 max-w-xl text-base leading-relaxed text-white/75 md:text-lg">
+        <Headline
+          as="h1"
+          lines={HERO.lines}
+          delay={0.2}
+          trigger="mount"
+          className="mt-8 max-w-6xl text-display-xl font-semibold text-white"
+        />
+
+        <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+          <Reveal trigger="mount" delay={0.45}>
+            <p className="max-w-xl text-base leading-relaxed text-navy-100 sm:text-lg">
               {HERO.subheadline}
             </p>
           </Reveal>
 
-          <Reveal delay={0.24}>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <LiquidMetalButtonLink href={ROUTES.contact} size="lg" withArrow>
-                {HERO.primaryCta}
-              </LiquidMetalButtonLink>
-              <ButtonLink href={ROUTES.services} size="lg" variant="outline">
+          <Reveal trigger="mount" delay={0.55}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button href={ROUTES.contact}>{HERO.primaryCta}</Button>
+              <Button href={ROUTES.services} variant="outline">
                 {HERO.secondaryCta}
-              </ButtonLink>
+              </Button>
             </div>
           </Reveal>
         </div>

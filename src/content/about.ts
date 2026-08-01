@@ -1,4 +1,5 @@
 import { SITE } from '@/lib/constants'
+import type { HeadlineLine } from '@/types/content'
 
 /**
  * Textos institucionales. Provienen literalmente del brief del cliente, salvo la
@@ -35,18 +36,29 @@ export const COMMITMENT = {
 
 /** Copy del hero de la home. */
 export const HERO = {
-  eyebrow: 'Ingeniería · Consultoría · Interventoría',
-  headline: 'Infraestructura que responde',
-  headlineAccent: 'por sus resultados',
+  /** Las tres disciplinas, listadas como piezas separadas para poder numerarlas. */
+  disciplines: ['Ingeniería', 'Consultoría', 'Interventoría'],
+  lines: [
+    'Infraestructura',
+    'que responde',
+    { text: 'por sus resultados', accent: true },
+  ] as const satisfies readonly HeadlineLine[],
   subheadline:
     'Acompañamos proyectos de infraestructura pública y privada en Colombia, desde la planeación y estructuración hasta la ejecución, supervisión y cierre.',
   primaryCta: 'Hablemos de tu proyecto',
   secondaryCta: 'Ver servicios',
+  /** Texto del indicador de scroll, leído por lectores de pantalla. */
+  scrollHint: 'Desplázate para continuar',
 } as const
 
 /** Copy de la banda de cierre, reutilizada en varias páginas. */
 export const CTA_BAND = {
-  heading: '¿Tienes un proyecto de infraestructura en marcha?',
+  eyebrow: 'Siguiente paso',
+  lines: [
+    '¿Tienes un proyecto',
+    { text: 'de infraestructura', accent: true },
+    'en marcha?',
+  ] as const satisfies readonly HeadlineLine[],
   text: 'Cuéntanos en qué etapa está y qué necesitas resolver. Te respondemos con una propuesta de alcance concreta.',
   cta: 'Contáctanos',
 } as const

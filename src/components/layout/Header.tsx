@@ -1,159 +1,206 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
-import { Container } from '@/components/ui/Container'
-import { LiquidMetalButtonLink } from '@/components/ui/LiquidMetalButton'
+import { Button } from '@/components/ui/Button'
 import { NAV_LINKS, ROUTES } from '@/lib/constants'
-import { cn } from '@/lib/utils'
+import { cn, formatIndex } from '@/lib/utils'
 
-/** Píxeles de scroll a partir de los cuales el header pasa a fondo sólido. */
-const SOLID_AFTER = 24
+/** Desplazamiento a partir del cual el header deja de ser transparente. */
+const SOLID_AT = 24
 
 export function Header() {
   const pathname = usePathname()
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [solid, setSolid] = useState(false)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
-  /**
-   * El menú guarda la ruta en la que se abrió. Así basta con comparar contra la
-   * ruta actual para que se cierre solo al navegar, sin un efecto que sincronice
-   * estado con estado.
+  /*
+   * El header arranca transparente sobre el hero y se vuelve sólido en cuanto
+   * la página se mueve. `passive` porque el manejador nunca cancela el evento y
+   * marcarlo permite al navegador seguir haciendo scroll sin esperarlo.
    */
-  const [menu, setMenu] = useState({ open: false, path: pathname })
-  const isMenuOpen = menu.open && menu.path === pathname
-  const setIsMenuOpen = (open: boolean) => setMenu({ open, path: pathname })
-
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > SOLID_AFTER)
+    const onScroll = () => setSolid(window.scrollY > SOLID_AT)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Con el menú abierto el fondo no debe desplazarse.
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [isMenuOpen])
+    if (!open) return
 
-  useEffect(() => {
-    if (!isMenuOpen) return
+    /* El fondo no debe poder desplazarse detrás del panel. */
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
     const onKeyDown = (event: KeyboardEvent) => {
-      // `setMenu` es estable; `setIsMenuOpen` se recrea en cada render.
-      if (event.key === 'Escape') setMenu((prev) => ({ ...prev, open: false }))
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isMenuOpen])
+      if (event.key === 'Escape') {
+        setOpen(false)
+        return
+      }
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
+      if (event.key !== 'Tab') return
+
+      /* Retención del foco: sin esto el tabulador se va al contenido que hay
+         debajo del panel, que el usuario no puede ver. */
+      const focusables = panelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      )
+      if (!focusables || focusables.length === 0) return
+
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    panelRef.current?.querySelector<HTMLElement>('a[href]')?.focus()
+
+    /* Se captura ahora: para cuando corra la limpieza, `toggleRef.current`
+       podría apuntar a otro nodo o a ninguno. */
+    const toggle = toggleRef.current
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+      /* El foco vuelve al botón que abrió el panel, no al principio del documento. */
+      toggle?.focus()
+    }
+  }, [open])
+
+  const isActive = (href: string) =>
+    href === ROUTES.home ? pathname === href : pathname.startsWith(href)
 
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300',
-        isScrolled || isMenuOpen
-          ? 'border-b border-white/10 bg-navy-950/90 backdrop-blur-md'
-          : 'border-b border-transparent bg-transparent',
+        'fixed inset-x-0 top-0 z-50 h-(--header-height) transition-colors duration-300 lg:h-(--header-height-lg)',
+        solid || open ? 'bg-navy-950/95 backdrop-blur-md' : 'bg-transparent',
       )}
     >
-      <Container>
-        <div className="flex h-[var(--header-height)] items-center justify-between lg:h-[var(--header-height-lg)]">
-          <Logo />
+      {/* Filo inferior. Se desvanece con el header transparente en vez de
+          aparecer de golpe al empezar a desplazar. */}
+      <span
+        aria-hidden="true"
+        className={cn(
+          'absolute inset-x-0 bottom-0 h-px bg-navy-700 transition-opacity duration-300',
+          solid || open ? 'opacity-100' : 'opacity-0',
+        )}
+      />
 
-          <nav aria-label="Navegación principal" className="hidden items-center gap-1 lg:flex">
-            {NAV_LINKS.map((link) => (
+      <div className="mx-auto flex h-full max-w-[100rem] items-center justify-between gap-6 px-6 sm:px-10 lg:px-16">
+        <Logo />
+
+        <nav aria-label="Principal" className="hidden items-center gap-9 lg:flex">
+          {NAV_LINKS.map((link) => {
+            const active = isActive(link.href)
+
+            return (
+              /*
+               * El enlace mide 44 px de alto —mínimo táctil de HIG, y 1024 px
+               * puede ser una tablet— mientras que el subrayado se ancla al
+               * `<span>` del texto. Si colgara del enlace quedaría a 15 px por
+               * debajo de las letras, flotando.
+               */
               <Link
                 key={link.href}
                 href={link.href}
-                aria-current={isActive(link.href) ? 'page' : undefined}
-                className={cn(
-                  'group relative px-3.5 py-2 text-[0.9375rem] font-semibold tracking-[0.02em] transition-colors duration-200',
-                  isActive(link.href) ? 'text-white' : 'text-white/70 hover:text-white',
-                )}
+                aria-current={active ? 'page' : undefined}
+                className="group flex min-h-11 items-center font-mono text-label uppercase text-navy-100 transition-colors duration-200 hover:text-white"
               >
-                {link.label}
-                <span
-                  className={cn(
-                    'absolute inset-x-3.5 bottom-1 h-0.5 origin-left rounded-full bg-terracota-500 transition-transform duration-300',
-                    isActive(link.href) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
-                  )}
-                  aria-hidden="true"
-                />
+                <span className="relative">
+                  {link.label}
+                  {/* Presente y al 100 % en la ruta activa; trazado desde la
+                      izquierda al pasar el cursor por las demás. */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'absolute inset-x-0 -bottom-1.5 h-px origin-left bg-terracota-500 transition-transform duration-300 ease-[var(--ease-out-soft)]',
+                      active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+                    )}
+                  />
+                </span>
               </Link>
-            ))}
-          </nav>
+            )
+          })}
+        </nav>
 
-          <div className="flex items-center gap-3">
-            <LiquidMetalButtonLink
-              href={ROUTES.contact}
-              className="hidden lg:inline-flex"
-              withArrow
-            >
-              Hablemos
-            </LiquidMetalButtonLink>
-
-            <button
-              type="button"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-expanded={isMenuOpen}
-              aria-controls="menu-movil"
-              aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-              className="flex size-11 items-center justify-center rounded-full border border-white/25 text-white transition-colors duration-300 hover:border-terracota-500 lg:hidden"
-            >
-              {isMenuOpen ? (
-                <X className="size-5" strokeWidth={2} aria-hidden="true" />
-              ) : (
-                <Menu className="size-5" strokeWidth={2} aria-hidden="true" />
-              )}
-            </button>
-          </div>
+        <div className="hidden lg:block">
+          <Button href={ROUTES.contact} className="min-h-11 px-6">
+            Hablemos
+          </Button>
         </div>
-      </Container>
+
+        <button
+          ref={toggleRef}
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-controls="menu-movil"
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          className="-mr-3 flex size-12 cursor-pointer items-center justify-center text-white lg:hidden"
+        >
+          {open ? (
+            <X aria-hidden="true" strokeWidth={1.5} className="size-6" />
+          ) : (
+            <Menu aria-hidden="true" strokeWidth={1.5} className="size-6" />
+          )}
+        </button>
+      </div>
 
       {/*
-        El contenido se monta solo con el menú abierto. Dejándolo siempre en el
-        DOM, el CTA inferior levantaba un contexto WebGL sobre una caja de 0×0.
+        El panel permanece en el árbol y se oculta con `hidden`, que además lo
+        retira del orden de tabulación y del árbol de accesibilidad. Desmontarlo
+        haría imposible devolver el foco de forma ordenada al cerrarlo.
       */}
       <div
         id="menu-movil"
-        hidden={!isMenuOpen}
-        className="h-[calc(100dvh-var(--header-height))] overflow-y-auto border-t border-white/10 bg-navy-950 lg:hidden"
+        ref={panelRef}
+        hidden={!open}
+        className="fixed inset-x-0 top-(--header-height) bottom-0 z-40 overflow-y-auto bg-navy-950 lg:hidden"
       >
-        {isMenuOpen ? (
-          <Container className="flex flex-col gap-2 py-8">
-            <nav aria-label="Navegación principal móvil" className="flex flex-col">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={isActive(link.href) ? 'page' : undefined}
-                  className={cn(
-                    'border-b border-white/10 py-5 font-display text-2xl font-bold tracking-tight transition-colors duration-200',
-                    isActive(link.href)
-                      ? 'text-terracota-400'
-                      : 'text-white hover:text-terracota-300',
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-            <LiquidMetalButtonLink
-              href={ROUTES.contact}
-              size="lg"
-              className="mt-6 w-full"
-              withArrow
+        <nav aria-label="Principal (móvil)" className="flex flex-col px-6 pt-6 pb-12">
+          {NAV_LINKS.map((link, index) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={isActive(link.href) ? 'page' : undefined}
+              /* Cerrar aquí y no en un efecto sobre `pathname`: la intención de
+                 navegar es este clic, no un cambio de ruta que hay que observar
+                 después con un render de más. */
+              onClick={() => setOpen(false)}
+              className="group flex items-baseline gap-5 border-b border-navy-800 py-5"
             >
-              Hablemos
-            </LiquidMetalButtonLink>
-          </Container>
-        ) : null}
+              <span className="font-mono text-label tabular text-terracota-500">
+                {formatIndex(index)}
+              </span>
+              <span
+                className={cn(
+                  'stretch-display font-display text-2xl font-semibold tracking-tight transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover:translate-x-1',
+                  isActive(link.href) ? 'text-terracota-500' : 'text-white',
+                )}
+              >
+                {link.label}
+              </span>
+            </Link>
+          ))}
+
+          <Button href={ROUTES.contact} onClick={() => setOpen(false)} className="mt-10 w-full">
+            Hablemos
+          </Button>
+        </nav>
       </div>
     </header>
   )

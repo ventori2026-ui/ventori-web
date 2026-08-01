@@ -1,74 +1,68 @@
 import Image from 'next/image'
+import { Parallax } from '@/components/motion/Parallax'
 import { MEDIA, type MediaKey } from '@/content/media'
 import { cn } from '@/lib/utils'
 
-/** Relaciones de aspecto del sitio, calcadas del ritmo de la referencia. */
-const RATIOS = {
-  wide: 'aspect-16/10',
-  landscape: 'aspect-4/3',
-  panorama: 'aspect-21/9',
-  square: 'aspect-square',
-  portrait: 'aspect-3/4',
-  /** Sin relación fija: la altura la impone el contenedor (paneles a sangre). */
-  fill: 'h-full',
-} as const
-
 interface MediaFrameProps {
   media: MediaKey
-  ratio?: keyof typeof RATIOS
-  className?: string
-  /** Valor de `sizes`; ajústalo al ancho real que ocupa la imagen en cada breakpoint. */
-  sizes?: string
+  /** Proporción del marco. La fotografía se recorta para llenarlo. */
+  ratio?: 'portrait' | 'landscape' | 'square' | 'wide' | 'fill'
+  /** Descriptor de anchos para el srcset. Sin él el navegador asume 100vw. */
+  sizes: string
+  /** Solo para la imagen que compite por ser el LCP de la página. */
   priority?: boolean
-  /** Velo navy sobre la foto, para que el texto superpuesto mantenga contraste. */
-  overlay?: 'none' | 'soft' | 'strong' | 'bottom'
-  /** Zoom lento en hover. Solo tiene sentido si el marco es un enlace. */
-  zoomOnHover?: boolean
+  /** Desactiva el parallax donde el marco ya está en movimiento por otra causa. */
+  parallax?: boolean
+  className?: string
+  /** Capa opcional sobre la fotografía: pie de foto, índice, velo. */
   children?: React.ReactNode
 }
 
-const OVERLAYS = {
-  none: null,
-  soft: 'bg-navy-950/35',
-  strong: 'bg-navy-950/65',
-  bottom: 'bg-gradient-to-t from-navy-950 via-navy-950/55 to-transparent',
+const RATIOS = {
+  portrait: 'aspect-3/4',
+  landscape: 'aspect-4/3',
+  square: 'aspect-square',
+  wide: 'aspect-16/9',
+  fill: 'h-full',
 } as const
 
 /**
- * Contenedor estándar de imagen: recorta con `object-cover`, admite un velo para
- * garantizar contraste del texto encima y acepta hijos posicionados sobre la foto.
+ * Marco de fotografía con el bisel de marca.
+ *
+ * Toda la fotografía del sitio pasa por aquí, y esa es la razón de que el bisel
+ * se lea como sistema y no como capricho: aparece siempre en las mismas dos
+ * esquinas y con el mismo tamaño relativo.
+ *
+ * El alto y el ancho salen del manifiesto de `content/media.ts`, así que el
+ * navegador reserva el espacio antes de descargar la imagen y el bloque no salta
+ * (CLS). Con `fill` el espacio lo reserva la proporción del contenedor.
  */
 export function MediaFrame({
   media,
-  ratio = 'wide',
-  className,
-  sizes = '100vw',
+  ratio = 'landscape',
+  sizes,
   priority = false,
-  overlay = 'none',
-  zoomOnHover = false,
+  parallax = true,
+  className,
   children,
 }: MediaFrameProps) {
-  const image = MEDIA[media]
+  const asset = MEDIA[media]
+
+  const image = (
+    <Image
+      src={asset.src}
+      alt={asset.alt}
+      fill
+      sizes={sizes}
+      priority={priority}
+      className="object-cover"
+    />
+  )
 
   return (
-    <div className={cn('relative overflow-hidden bg-navy-900', RATIOS[ratio], className)}>
-      <Image
-        src={image.src}
-        alt={image.alt}
-        fill
-        sizes={sizes}
-        priority={priority}
-        className={cn(
-          'object-cover',
-          zoomOnHover && 'transition-transform duration-700 ease-out group-hover:scale-105',
-        )}
-      />
-
-      {OVERLAYS[overlay] ? (
-        <div className={cn('absolute inset-0', OVERLAYS[overlay])} aria-hidden="true" />
-      ) : null}
-
-      {children ? <div className="absolute inset-0">{children}</div> : null}
+    <div className={cn('relative overflow-hidden bevel', RATIOS[ratio], className)}>
+      {parallax ? <Parallax>{image}</Parallax> : image}
+      {children}
     </div>
   )
 }
