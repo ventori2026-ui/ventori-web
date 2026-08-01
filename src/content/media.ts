@@ -6,6 +6,9 @@
  * material propio de Ventori sea un cambio en un solo sitio.
  *
  * Créditos y licencias en public/media/CREDITS.md
+ *
+ * El vídeo del hero NO está aquí: es material propio de la empresa y vive en
+ * `content/hero-video.ts`, fuera del alcance del generador.
  */
 
 export interface MediaImage {
@@ -110,20 +113,3 @@ export const MEDIA = {
 
 export type MediaKey = keyof typeof MEDIA
 
-export const HERO_CLIPS: readonly MediaVideo[] = [
-  {
-    src: '/media/hero1.mp4',
-    poster: '/media/hero1-poster.jpg',
-    alt: 'Sobrevuelo de un corredor vial',
-  },
-  {
-    src: '/media/hero2.mp4',
-    poster: '/media/hero2-poster.jpg',
-    alt: 'Sobrevuelo de un intercambiador vial urbano',
-  },
-  {
-    src: '/media/hero3.mp4',
-    poster: '/media/hero3-poster.jpg',
-    alt: 'Sobrevuelo de un puente sobre un río',
-  },
-] as const

@@ -2,14 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
-import { HERO_CLIPS } from '@/content/media'
+import { HERO_CLIPS } from '@/content/hero-video'
 import { cn } from '@/lib/utils'
 
-/** Milisegundos que permanece cada clip antes de fundir al siguiente. */
+/**
+ * Milisegundos que permanece cada clip antes de fundir al siguiente.
+ *
+ * Hoy no llega a usarse: `HERO_CLIPS` tiene un solo vídeo, que es un montaje ya
+ * cortado, y el ciclo no se activa por debajo de dos. Se conserva porque el
+ * componente sigue aceptando varios y volver a poner dos sería solo añadirlos.
+ */
 const CLIP_DURATION = 7000
 
 /**
- * Fondo del hero: tres sobrevuelos que se funden en bucle.
+ * Fondo del hero.
  *
  * Decisiones que importan:
  *

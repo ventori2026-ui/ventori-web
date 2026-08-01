@@ -100,20 +100,15 @@ export const PHOTOS = [
  * Clips del hero. Se descarga el archivo de vídeo y su imagen de vista previa,
  * que se usa como `poster` para que la primera pintura no dependa del vídeo.
  */
-export const HERO_VIDEOS = [
-  { key: 'hero1', query: 'aerial drone highway road', alt: 'Sobrevuelo de un corredor vial' },
-  {
-    /* "construction site" devolvía ruinas y demoliciones: mensaje opuesto al del hero. */
-    key: 'hero2',
-    query: 'aerial drone city highway traffic overpass',
-    alt: 'Sobrevuelo de un intercambiador vial urbano',
-  },
-  {
-    key: 'hero3',
-    query: 'aerial bridge river infrastructure',
-    alt: 'Sobrevuelo de un puente sobre un río',
-  },
-]
+/**
+ * Vacío a propósito. El hero usa material propio de Grupo Ventori, versionado
+ * en `public/media/hero.mp4` y declarado a mano en `src/content/hero-video.ts`.
+ *
+ * Si alguna vez vuelve a hacer falta vídeo de stock, añadirlo aquí NO basta:
+ * hay que devolverle al generador la escritura de `HERO_CLIPS`, que se le
+ * quitó para que no pudiera sobrescribir el material del cliente.
+ */
+export const HERO_VIDEOS = []
 
 /** Ancho máximo al que se guardan las fotos. Suficiente para paneles a sangre. */
 export const PHOTO_MAX_WIDTH = 2400

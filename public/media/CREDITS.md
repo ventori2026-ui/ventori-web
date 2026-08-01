@@ -7,6 +7,10 @@ trazabilidad de la procedencia de cada activo.
 Todo este material es **ambientación**. Ninguna de estas imágenes representa un
 proyecto ejecutado por Grupo Ventori ni puede rotularse como tal.
 
+El **vídeo del hero es la excepción**: lo entregó el cliente, no procede de
+Pexels y no lo gestiona este script. Vive en `public/media/hero.mp4` y se declara
+en `src/content/hero-video.ts`.
+
 | Clave | Tipo | Autor | Origen |
 |---|---|---|---|
 | sectorVial | foto | K | https://www.pexels.com/photo/aerial-view-of-busy-highway-intersection-in-sandton-33622132/ |

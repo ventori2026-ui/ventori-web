@@ -305,7 +305,6 @@ async function main() {
 
 function renderModule(entries) {
   const photos = entries.filter((entry) => entry.kind === 'photo')
-  const videos = entries.filter((entry) => entry.kind === 'video')
 
   const photoBody = photos
     .map(
@@ -318,15 +317,11 @@ function renderModule(entries) {
     )
     .join('\n')
 
-  const videoBody = videos
-    .map(
-      (video) => `  {
-    src: '${video.src}',
-    poster: '${video.poster}',
-    alt: ${JSON.stringify(video.alt)},
-  },`,
-    )
-    .join('\n')
+  /*
+   * El generador ya no escribe `HERO_CLIPS`: el vídeo del hero es material
+   * propio del cliente y se declara a mano en `src/content/hero-video.ts`, para
+   * que ninguna ejecución de este script pueda sobrescribirlo.
+   */
 
   return `/**
  * GENERADO POR \`npm run media\` — no editar a mano.
@@ -336,6 +331,9 @@ function renderModule(entries) {
  * material propio de Ventori sea un cambio en un solo sitio.
  *
  * Créditos y licencias en public/media/CREDITS.md
+ *
+ * El vídeo del hero NO está aquí: es material propio de la empresa y vive en
+ * \`content/hero-video.ts\`, fuera del alcance del generador.
  */
 
 export interface MediaImage {
@@ -356,10 +354,6 @@ ${photoBody}
 } as const satisfies Record<string, MediaImage>
 
 export type MediaKey = keyof typeof MEDIA
-
-export const HERO_CLIPS: readonly MediaVideo[] = [
-${videoBody}
-] as const
 `
 }
 
@@ -372,6 +366,10 @@ trazabilidad de la procedencia de cada activo.
 
 Todo este material es **ambientación**. Ninguna de estas imágenes representa un
 proyecto ejecutado por Grupo Ventori ni puede rotularse como tal.
+
+El **vídeo del hero es la excepción**: lo entregó el cliente, no procede de
+Pexels y no lo gestiona este script. Vive en \`public/media/hero.mp4\` y se
+declara en \`src/content/hero-video.ts\`.
 
 | Clave | Tipo | Autor | Origen |
 |---|---|---|---|
