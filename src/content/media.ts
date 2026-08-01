@@ -69,9 +69,9 @@ export const MEDIA = {
   },
   aboutSplit: {
     src: '/media/aboutSplit.jpg',
-    width: 2400,
-    height: 1600,
-    alt: 'Equipo de ingeniería revisando planos en obra',
+    width: 1600,
+    height: 2400,
+    alt: 'Profesional revisando y marcando a mano planos estructurales sobre una mesa de trabajo',
   },
   pillarEstructuracion: {
     src: '/media/pillarEstructuracion.jpg',

@@ -60,9 +60,15 @@ export const PHOTOS = [
     alt: 'Grúa torre sobre una obra de edificación en curso',
   },
   {
+    /*
+     * Elegida por el cliente, no resuelta por consulta: es de Unsplash y está
+     * fijada en media.lock.json. `npm run media` la respeta porque el archivo y
+     * su registro ya existen, pero `npm run media -- --force` la descartaría y
+     * volvería a bajar una de Pexels con esta consulta.
+     */
     key: 'aboutSplit',
     query: 'engineers blueprint construction site helmet',
-    alt: 'Equipo de ingeniería revisando planos en obra',
+    alt: "Profesional revisando y marcando a mano planos estructurales sobre una mesa de trabajo",
   },
   {
     key: 'pillarEstructuracion',
