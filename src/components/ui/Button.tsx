@@ -2,6 +2,18 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+/**
+ * Cada variante asume la superficie sobre la que vive, y de ahí salen su color
+ * de reposo y el del barrido de hover:
+ *
+ * - `primary`  peach sobre navy. La acción principal.
+ * - `outline`  solo contorno, sobre navy o sobre fotografía.
+ * - `onPaper`  navy sobre papel. La acción de las secciones claras.
+ *
+ * No hay variante peach para superficie clara porque hoy no se necesita. Si
+ * llega a hacer falta, no vale reutilizar `primary`: su barrido es blanco y
+ * sobre papel el botón se quedaría sin límites al pasar el cursor.
+ */
 type ButtonVariant = 'primary' | 'outline' | 'onPaper'
 
 interface BaseProps {
@@ -24,7 +36,16 @@ type ButtonProps = BaseProps &
  * entero en cada fotograma.
  */
 const SWEEP = {
-  primary: 'bg-navy-950',
+  /*
+   * Blanco, no navy. El botón peach va siempre sobre superficie oscura, y
+   * aclararlo al pasar el cursor lo separa del fondo en vez de fundirlo con él.
+   * Barrer a navy sobre una sección navy hacía que el botón pareciera apagarse.
+   *
+   * Esto vale porque `primary` es la variante de superficie oscura. Un botón
+   * peach sobre papel tendría que barrer a navy: en blanco sobre blanco el
+   * relleno desaparecería y el botón se quedaría sin límites.
+   */
+  primary: 'bg-white',
   outline: 'bg-white',
   onPaper: 'bg-terracota-500',
 } as const satisfies Record<ButtonVariant, string>
@@ -36,9 +57,15 @@ const SURFACE = {
   onPaper: 'bg-navy-950 text-white',
 } as const satisfies Record<ButtonVariant, string>
 
-/* Color del texto una vez el barrido ha cubierto el botón. */
+/*
+ * Color del texto una vez el barrido ha cubierto el botón.
+ *
+ * `primary` mantiene el navy que ya tenía en reposo: pasa de navy sobre peach
+ * (7.4:1) a navy sobre blanco (19.9:1), así que el texto nunca cambia de color
+ * y no hay un instante intermedio de bajo contraste durante el barrido.
+ */
 const SURFACE_HOVER = {
-  primary: 'group-hover:text-white group-focus-visible:text-white',
+  primary: 'group-hover:text-navy-950 group-focus-visible:text-navy-950',
   outline: 'group-hover:text-navy-950 group-focus-visible:text-navy-950',
   onPaper: 'group-hover:text-navy-950 group-focus-visible:text-navy-950',
 } as const satisfies Record<ButtonVariant, string>
